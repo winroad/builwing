@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<title>株式会社ビルウイング</title>
+<?php if(isset($title)):?>
+@yield('style')
+{{ HTML::style('hbp/hpbparts.css') }}
+{{ HTML::style('hpb/container_12Ba_2c_top.css') }}
+{{ HTML::style('hpb/main_12Ba_2c.css') }}
+{{ HTML::style('hpb/user.css') }}
+@show
+<?php else:?>
+<link rel="stylesheet" href="../../../public/hpb/hpbparts.css" type="text/css" id="hpbparts">
+<link rel="stylesheet" href="../../../public/hpb/container_12Ba_2c_top.css" type="text/css" id="hpbcontainer">
+<link rel="stylesheet" href="../../../public/hpb/main_12Ba_2c.css" type="text/css" id="hpbmain">
+<link rel="stylesheet" href="../../../public/hpb/user.css" type="text/css" id="hpbuser">
+<script type="text/javascript" language="JavaScript">
+<!--HPB_SCRIPT_UAREDIRECT
+if(document.referrer.indexOf(document.location.hostname)==-1){ if (navigator.userAgent.indexOf('iPhone') > 0 || (navigator.userAgent.indexOf('Android') > 0 && navigator.userAgent.indexOf('Mobile') > 0)) {location.href = 'sp/blankpage.html';}}//-->
+</script>
+<?php endif;?>
+</head>
+<body id="hpb-template-12-02a-01" class="hpb-layoutset-01">
+<div id="hpb-skip"><a href="#hpb-title">本文へスキップ</a></div>
+<!-- container -->
+<div id="hpb-container">
+  <!-- header -->
+  <div id="hpb-header">
+    <div id="hpb-headerMain">
+      <h1>株式会社ビルウイングは○○○○○○○○を専門とする○○○○○○○○なショップです。</h1>
+    </div>
+    <div id="hpb-headerLogo"><a href="hpb/index.blade.php">株式会社ビルウイング</a></div>
+    <div id="hpb-headerExtra1">
+      <p class="tel"><span>電話でのお問い合わせは</span>03-5789-7377</p>
+      <p class="mail"><a href="mailto:nakada@builwing.com">メールでのお問い合わせはこちら</a></p>
+    </div>
+    <div id="hpb-headerExtra2"><a class="hpb-dvcc-basket" href="#">カートを見る</a> </div>
+  </div>
+  <!-- header end --><!-- inner -->
+  <div id="hpb-inner">
+    <!-- wrapper -->
+    <div id="hpb-wrapper">
+      <!-- page title -->
+      <div id="hpb-title" class="hpb-top-image">
+        <h2>株式会社ビルウイングは○○○○○○○○を専門とする○○○○○○○○なショップです。</h2>
+      </div>
+      <!-- page title end --><!-- main -->
+<?php if(isset($title)):?>
+@yield('content')
+<?php else:?>
+      <div id="hpb-main">
+        <!-- toppage -->
+        <div id="toppage">
+          <p class="large">株式会社ビルウイングは○○○○○○○○を専門とする○○○○○○○○なショップです。</p>
+          <p>株式会社ビルウイングへようこそ。<br>
+          ここに紹介文が入ります。ここに紹介文が入ります。ここに紹介文が入ります。ここに紹介文が入ります。ここに紹介文が入ります。<br>
+          ○○○○○○○○のお店です。</p>
+          <div id="toppage-item">
+            <h3><span class="ja">新商品情報</span></h3>
+            <div class="item">
+              <a href="../../../public/hpb/detail.php"><img src="../../../public/hpb/index-itemimg01.jpg" width="150" height="150" alt="商品画像" class="itemimg"></a>
+              <h4><a href="../../../public/hpb/detail.php">商品名：○○○○○○</a></h4>
+              <p class="price"><a href="../../../public/hpb/detail.php">0,000円[税込]</a></p>
+            </div>
+            <div class="item">
+              <a href="../../../public/hpb/detail.php"><img src="../../../public/hpb/index-itemimg02.jpg" width="150" height="150" alt="商品画像" class="itemimg"></a>
+              <h4><a href="../../../public/hpb/detail.php">商品名：○○○○○○</a></h4>
+              <p class="price"><a href="../../../public/hpb/detail.php">0,000円[税込]</a></p>
+            </div>
+            <div class="item">
+              <a href="../../../public/hpb/detail.php"><img src="../../../public/hpb/index-itemimg03.jpg" width="150" height="150" alt="商品画像" class="itemimg"></a>
+              <h4><a href="../../../public/hpb/detail.php">商品名：○○○○○○</a></h4>
+              <p class="price"><a href="../../../public/hpb/detail.php">0,000円[税込]</a></p>
+            </div>
+            <div class="item">
+              <a href="../../../public/hpb/detail.php"><img src="../../../public/hpb/index-itemimg04.jpg" width="150" height="150" alt="商品画像" class="itemimg"></a>
+              <h4><a href="../../../public/hpb/detail.php">商品名：○○○○○○</a></h4>
+              <p class="price"><a href="../../../public/hpb/detail.php">0,000円[税込]</a></p>
+            </div>
+            <div class="item">
+              <a href="../../../public/hpb/detail.php"><img src="../../../public/hpb/index-itemimg05.jpg" width="150" height="150" alt="商品画像" class="itemimg"></a>
+              <h4><a href="../../../public/hpb/detail.php">商品名：○○○○○○</a></h4>
+              <p class="price"><a href="../../../public/hpb/detail.php">0,000円[税込]</a></p>
+            </div>
+            <div class="item">
+              <a href="../../../public/hpb/detail.php"><img src="../../../public/hpb/index-itemimg06.jpg" width="150" height="150" alt="商品画像" class="itemimg"></a>
+              <h4><a href="../../../public/hpb/detail.php">商品名：○○○○○○</a></h4>
+              <p class="price"><a href="../../../public/hpb/detail.php">0,000円[税込]</a></p>
+            </div>
+            <div class="item">
+              <a href="../../../public/hpb/detail.php"><img src="../../../public/hpb/index-itemimg07.jpg" width="150" height="150" alt="商品画像" class="itemimg"></a>
+              <h4><a href="../../../public/hpb/detail.php">商品名：○○○○○○</a></h4>
+              <p class="price"><a href="../../../public/hpb/detail.php">0,000円[税込]</a></p>
+            </div>
+            <div class="item">
+              <a href="../../../public/hpb/detail.php"><img src="../../../public/hpb/index-itemimg08.jpg" width="150" height="150" alt="商品画像" class="itemimg"></a>
+              <h4><a href="../../../public/hpb/detail.php">商品名：○○○○○○</a></h4>
+              <p class="price"><a href="../../../public/hpb/detail.php">0,000円[税込]</a></p>
+            </div>
+            <hr>
+          </div>
+          <div id="toppage-reccomend">
+            <h3><span class="ja">オススメ商品</span></h3>
+            <div class="reccomend">
+              <a href="../../../public/hpb/detail.php"><img src="../../../public/hpb/index-reccomendimg01.jpg" width="150" height="150" alt="商品画像" class="itemimg"></a>
+              <h4><a href="../../../public/hpb/detail.php">商品名：○○○○○○</a></h4>
+              <p class="price"><a href="../../../public/hpb/detail.php">0,000円[税込]</a></p>
+            </div>
+            <div class="reccomend">
+              <a href="../../../public/hpb/detail.php"><img src="../../../public/hpb/index-reccomendimg02.jpg" width="150" height="150" alt="商品画像" class="itemimg"></a>
+              <h4><a href="../../../public/hpb/detail.php">商品名：○○○○○○</a></h4>
+              <p class="price"><a href="../../../public/hpb/detail.php">0,000円[税込]</a></p>
+            </div>
+            <div class="reccomend">
+              <a href="../../../public/hpb/detail.php"><img src="../../../public/hpb/index-reccomendimg03.jpg" width="150" height="150" alt="商品画像" class="itemimg"></a>
+              <h4><a href="../../../public/hpb/detail.php">商品名：○○○○○○</a></h4>
+              <p class="price"><a href="../../../public/hpb/detail.php">0,000円[税込]</a></p>
+            </div>
+            <div class="reccomend">
+              <a href="../../../public/hpb/detail.php"><img src="../../../public/hpb/index-reccomendimg04.jpg" width="150" height="150" alt="商品画像" class="itemimg"></a>
+              <h4><a href="../../../public/hpb/detail.php">商品名：○○○○○○</a></h4>
+              <p class="price"><a href="../../../public/hpb/detail.php">0,000円[税込]</a></p>
+            </div>
+            <div class="reccomend">
+              <a href="../../../public/hpb/detail.php"><img src="../../../public/hpb/index-reccomendimg05.jpg" width="150" height="150" alt="商品画像" class="itemimg"></a>
+              <h4><a href="../../../public/hpb/detail.php">商品名：○○○○○○</a></h4>
+              <p class="price"><a href="../../../public/hpb/detail.php">0,000円[税込]</a></p>
+            </div>
+            <div class="reccomend">
+              <a href="../../../public/hpb/detail.php"><img src="../../../public/hpb/index-reccomendimg06.jpg" width="150" height="150" alt="商品画像" class="itemimg"></a>
+              <h4><a href="../../../public/hpb/detail.php">商品名：○○○○○○</a></h4>
+              <p class="price"><a href="../../../public/hpb/detail.php">0,000円[税込]</a></p>
+            </div>
+            <div class="reccomend">
+              <a href="../../../public/hpb/detail.php"><img src="../../../public/hpb/index-reccomendimg07.jpg" width="150" height="150" alt="商品画像" class="itemimg"></a>
+              <h4><a href="../../../public/hpb/detail.php">商品名：○○○○○○</a></h4>
+              <p class="price"><a href="../../../public/hpb/detail.php">0,000円[税込]</a></p>
+            </div>
+            <div class="reccomend">
+              <a href="../../../public/hpb/detail.php"><img src="../../../public/hpb/index-reccomendimg08.jpg" width="150" height="150" alt="商品画像" class="itemimg"></a>
+              <h4><a href="../../../public/hpb/detail.php">商品名：○○○○○○</a></h4>
+              <p class="price"><a href="../../../public/hpb/detail.php">0,000円[税込]</a></p>
+            </div>
+            <hr>
+          </div>
+          <div id="toppage-special">
+            <h3><span class="ja">特集</span></h3>
+            <ul>
+              <li id="special-item1"><a href="#">ここに紹介文が入ります。ここに紹介文が入ります。</a>
+              <li id="special-item2"><a href="#">ここに紹介文が入ります。ここに紹介文が入ります。</a>
+              <li id="special-item3"><a href="#">ここに紹介文が入ります。ここに紹介文が入ります。</a>
+              <li id="special-item4"><a href="#">ここに紹介文が入ります。ここに紹介文が入ります。</a>
+              <li id="special-item5"><a href="#">ここに紹介文が入ります。ここに紹介文が入ります。</a>
+              <li id="special-item6"><a href="#">ここに紹介文が入ります。ここに紹介文が入ります。</a>
+            </ul>
+            <hr>
+          </div>
+          <div id="toppage-news">
+            <h3><span class="ja">インフォメーション</span></h3>
+            <dl>
+              <dt>20**年*月*日
+              <dd>○○○○○○○○を入荷しました。
+              <dt>20**年*月*日
+              <dd>○○に「○○○○○○」が掲載されました。
+              <dt>20**年*月*日
+              <dd>サイトをオープンしました。
+            </dl>
+          </div>
+          <div id="pagetop"><a href="#hpb-container">このページの先頭へ</a></div>
+        </div>
+        <!-- toppage end -->
+      </div>
+      <!-- main end -->
+<?php endif;?>
+    </div>
+    <!-- wrapper end --><!-- navi -->
+    <div id="hpb-nav">
+      <h3 class="hpb-c-index">ナビゲーション</h3>
+      <ul>
+        <li id="nav-toppage"><a href="hpb/index.blade.php"><span class="en">top&nbsp;page</span><span class="ja">トップページ</span></a>
+        <li id="nav-category"><a href="../../../public/hpb/category.php"><span class="en">category&nbsp;list</span><span class="ja">カテゴリ一覧</span></a>
+        <li id="nav-order"><a href="../../../public/hpb/order.php"><span class="en">order</span><span class="ja">ご注文方法</span></a>
+        <li id="nav-shop"><a href="../../../public/hpb/shop.php"><span class="en">shop&nbsp;info</span><span class="ja">ショップ案内</span></a>
+        <li id="nav-support"><a class="hpb-dvcc-support" href="#"><span class="en">support</span><span class="ja">お問い合わせ</span></a>
+        <li id="nav-register" class="hpb-dvcc-memberbase"><a class="hpb-dvcc-register" href="#"><span class="en">register</span><span class="ja">会員登録</span></a>
+      </ul>
+    </div>
+    <!-- navi end --><!-- aside -->
+    <div id="hpb-aside">
+      <div id="toppage-memberbox" class="hpb-dvcc-memberbase">
+        <h3>会員様ログイン</h3>
+        <div class="hpb-dvcc-memberbox">
+          <form name="form1" method="post" action="file:///C:/Program Files/JustSystems/HOMEPAGEBUILDER17/stdlayout/12/#" accept-charset="Shift_JIS" onsubmit="document.charset='shift_jis'">メールアドレス<br>
+          <input name="MailAddress" type="text" maxlength="255"><br>
+          パスワード<br>
+          <input name="PassWord" type="password" maxlength="16"><br>
+          <input type="submit" name="Submit" value="ログイン"> </form>
+          <a href="#">パスワード紛失</a><br>
+          <a href="#">［新規会員登録］</a>
+        </div>
+      </div>
+      <div id="toppage-searchbox">
+        <h3>現場検索</h3>
+        <div class="hpb-dvcc-searchbox">
+          <form name="form2" method="post" action="file:///C:/Program Files/JustSystems/HOMEPAGEBUILDER17/stdlayout/12/#" accept-charset="Shift_JIS" onsubmit="document.charset='shift_jis'">キーワード<br>
+          <input type="text" maxlength="255" name="Keyword"><br>
+          価格範囲<br>
+          <input type="text" maxlength="9" name="PriceMin">円～<input maxlength="9" name="PriceMax">円<br>
+          <input type="submit" name="Submit" value="検索"> </form>
+        </div>
+      </div>
+      <div id="toppage-campaignbox">
+        <h3>キャンペーン</h3>
+        <div class="hpb-dvcc-campaignbox">
+          <p>○月末まで全商品 ○○%OFF!</p>
+          <ul>
+            <li><a href="#">お得なタイムセール！</a>
+            <li><a href="#">○点以上のお買い上げで送料無料！</a>
+            <li><a href="#">もれなく ○○○○ ポイントプレゼント！</a>
+          </ul>
+        </div>
+      </div>
+      <div id="toppage-category">
+        <h3><span class="ja">カテゴリ</span></h3>
+        <ul>
+          <li id="category-item1"><a href="../../../public/hpb/item.php">カテゴリ○○○○</a>
+          <li id="category-item2"><a href="../../../public/hpb/item.php">カテゴリ○○○○</a>
+          <li id="category-item3"><a href="../../../public/hpb/item.php">カテゴリ○○○○</a>
+          <li id="category-item4"><a href="../../../public/hpb/item.php">カテゴリ○○○○</a>
+        </ul>
+        <hr>
+      </div>
+      <div id="banner">
+        <h3 class="hpb-c-index">バナースペース</h3>
+        <ul>
+          <li><a href="#" id="banner-present">プレゼント</a>
+          <li><a href="#" id="banner-magazine">メルマガ登録</a>
+          <li><a href="#" id="banner-rss">RSS</a>
+        </ul>
+      </div>
+      <div id="shopinfo">
+        <h3><span class="ja">ショップ情報</span></h3>
+        <h4>株式会社ビルウイング</h4>
+        <p>〒150-0031<br>
+        東京都渋谷区桜丘町24-8<br>
+        TEL.03-5789-7377<br>
+        FAX.03-3770-9476<br>
+        <a href="mailto:nakada@builwing.com">nakada@builwing.com</a><br>
+        <a href="../../../public/hpb/shop.php">→ショップ案内</a></p>
+      </div>
+    </div>
+    <!-- aside end -->
+  </div>
+  <!-- inner end --><!-- footer -->
+  <div id="hpb-footer">
+    <div id="hpb-footerMain">
+      <p>copyright&copy;20XX&nbsp;Builwing&nbsp;all&nbsp;rights&nbsp;reserved.</p>
+    </div>
+    <div id="hpb-footerExtra1">
+      <h3 class="hpb-c-index">サブナビゲーション</h3>
+      <ul>
+        <li><a href="../../../public/hpb/privacy.php">個人情報保護のための行動指針ページ</a>
+        <li><a href="../../../public/hpb/law.php">特定商取引法に関する記述</a>
+      </ul>
+    </div>
+  </div>
+  <!-- footer end -->
+</div>
+<!-- container end -->
+<p><a href="../../../public/hpb/sp/blankpage.html">スマートフォン版</a></p>
+</body>
+</html>

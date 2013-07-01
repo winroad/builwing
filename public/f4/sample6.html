@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="ja"> <!--<![endif]-->
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Foundation 4</title>
+
+  <link rel="stylesheet" href="css/normalize.css" />
+  <link rel="stylesheet" href="css/foundation.css" />
+  <script src="js/vendor/custom.modernizr.js"></script>
+  
+</head>
+<body>
+
+<!-- ここにコンテンツを記述します。 -->
+
+<!-- small-block-gridのみ使用 -->
+<ul class="small-block-grid-2">
+  <li><img src="../img/kura001.png"></li>
+  <li><img src="../img/kura002.png"></li>
+  <li><img src="../img/kura003.png"></li>
+  <li><img src="../img/kura004.png"></li>
+</ul>
+
+<!-- large-block-gridのみ使用 -->
+<ul class="large-block-grid-4">
+  <li><img src="img/kura001.png"></li>
+  <li><img src="img/kura002.png"></li>
+  <li><img src="img/kura003.png"></li>
+  <li><img src="img/kura004.png"></li>
+</ul>
+
+<!-- 両方のblock-gridを一緒に使用 -->
+<ul class="small-block-grid-2 large-block-grid-4">
+  <li><img src="f4/img/kura001.png"></li>
+  <li><img src="f4/img/kura002.png"></li>
+  <li><img src="f4/img/kura003.png"></li>
+  <li><img src="f4/img/kura004.png"></li>
+</ul>
+
+<!-- コンテンツはここまでです -->
+
+  <script>
+  document.write('<script src=' +
+  ('__proto__' in {} ? 'js/vendor/zepto' : 'js/vendor/jquery') +
+  '.js><\/script>')
+  </script>
+  
+  <script src="js/foundation.min.js"></script>
+  <script>
+    $(document).foundation();
+  </script>
+</body>
+</html>

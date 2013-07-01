@@ -1,0 +1,42 @@
+/* CSS Document */
+body{
+	background:#E8FFE8;
+}
+
+.top-bar{
+/*下記はGrad3で作成しました*/
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0.00, #0d46a5), color-stop(1.00, #08144d));
+background: -webkit-linear-gradient(#0d46a5, #08144d);
+background: -moz-linear-gradient(#0d46a5, #08144d);
+background: -o-linear-gradient(#0d46a5, #08144d);
+background: -ms-linear-gradient(#0d46a5, #08144d);
+background: linear-gradient(#0d46a5, #08144d);
+}
+
+.top-bar-section li a:not(.button) {		 
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0.00, #0d46a5), color-stop(1.00, #08144d));
+background: -webkit-linear-gradient(#0d46a5, #08144d);
+background: -moz-linear-gradient(#0d46a5, #08144d);
+background: -o-linear-gradient(#0d46a5, #08144d);
+background: -ms-linear-gradient(#0d46a5, #08144d);
+background: linear-gradient(#0d46a5, #08144d);
+}
+
+.top-bar-section .dropdown li label {
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0.00, #c3d9ff), color-stop(1.00, #97b0d9));
+background: -webkit-linear-gradient(#c3d9ff, #97b0d9);
+background: -moz-linear-gradient(#c3d9ff, #97b0d9);
+background: -o-linear-gradient(#c3d9ff, #97b0d9);
+background: -ms-linear-gradient(#c3d9ff, #97b0d9);
+background: linear-gradient(#c3d9ff, #97b0d9);
+}
+
+#copyright{
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0.00, #0d46a5), color-stop(1.00, #08144d));
+background: -webkit-linear-gradient(#0d46a5, #08144d);
+background: -moz-linear-gradient(#0d46a5, #08144d);
+background: -o-linear-gradient(#0d46a5, #08144d);
+background: -ms-linear-gradient(#0d46a5, #08144d);
+background: linear-gradient(#0d46a5, #08144d);
+	color:white;
+}

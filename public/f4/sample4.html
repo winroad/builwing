@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="ja"> <!--<![endif]-->
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Foundation 4</title>
+
+  <link rel="stylesheet" href="css/normalize.css" />
+  <link rel="stylesheet" href="css/foundation.css" />
+  <script src="js/vendor/custom.modernizr.js"></script>
+  
+ <style type="text/css">
+  <!--
+  .red {
+		background:red;
+		color:white;
+		padding:20px;
+	 }
+  .blue {
+		background:blue;
+		color:white;
+		padding:20px;
+	 }
+  .yellow {
+		background:yellow;
+		color:black;
+		padding:20px;
+	 }
+  .green {
+		background:green;
+		color:white;
+		padding:20px;
+	 }
+  -->
+  </style>
+</head>
+<body>
+
+<!-- ここにコンテンツを記述します。 -->
+
+
+<div class="row">
+  <div class="small-3 small-centered columns red">small-3 small-centered</div>
+</div>
+<div class="row">
+  <div class="small-6 large-centered columns blue">small-6 large-centered</div>
+</div>
+<div class="row">
+  <div class="small-9 small-centered large-uncentered columns yellow">small-9 small-centered large-uncentered</div>
+</div>
+<div class="row">
+  <div class="small-11 small-centered columns green">small-11 small-centered</div>
+</div>
+<div class="row">
+
+<!-- コンテンツはここまでです -->
+
+  <script>
+  document.write('<script src=' +
+  ('__proto__' in {} ? 'js/vendor/zepto' : 'js/vendor/jquery') +
+  '.js><\/script>')
+  </script>
+  
+  <script src="js/foundation.min.js"></script>
+  <script>
+    $(document).foundation();
+  </script>
+</body>
+</html>

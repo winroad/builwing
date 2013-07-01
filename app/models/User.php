@@ -48,5 +48,37 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	{
 		return $this->email;
 	}
-
+	
+/*
+|---------------------------------------------
+| パスワードセッター
+|---------------------------------------------
+*/
+public function setPasswordAttribute($value){
+$this->attributes['password']=Hash::make($value);
+}
+/*
+|--------------------------------------------
+| 複数代入禁止フィールドの指定
+|--------------------------------------------
+*/
+protected $guarded=array('id');
+ 
+/*
+|--------------------------------------------
+| リレーションの指定
+|--------------------------------------------
+*/
+public function role(){
+return $this->belongsTo('Role');
+}
+public function group(){
+return $this->belongsTo('Group');
+}
+/*
+|--------------------------------------------
+| ソフトデリートの設定
+|--------------------------------------------
+*/
+ protected $softDelete=true;
 }

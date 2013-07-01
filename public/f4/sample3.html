@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang="ja"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="ja"> <!--<![endif]-->
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Foundation 4</title>
+
+  <link rel="stylesheet" href="css/normalize.css" />
+  <link rel="stylesheet" href="css/foundation.css" />
+  <script src="js/vendor/custom.modernizr.js"></script>
+  
+ <style type="text/css">
+  <!--
+  .red {
+		background:red;
+		color:white;
+		padding:20px;
+	 }
+  .blue {
+		background:blue;
+		color:white;
+		padding:20px;
+	 }
+  .yellow {
+		background:yellow;
+		color:black;
+		padding:20px;
+	 }
+  .green {
+		background:green;
+		color:white;
+		padding:20px;
+	 }
+  .pink {
+		background:pink;
+		color:white;
+		padding:20px;
+	 }
+  .brown {
+		background:brown;
+		color:white;
+		padding:20px;
+	 }
+  -->
+  </style>
+</head>
+<body>
+
+<!-- ここにコンテンツを記述します。 -->
+
+<div class="row">
+  <div class="large-1 columns red">large-1</div>
+  <div class="large-11 columns blue">large-11</div>
+</div>
+<div class="row">
+  <div class="large-1 columns yellow">large-1</div>
+  <div class="large-10 large-offset-1 columns green">large-10 large-offset-1</div>
+</div>
+<div class="row">
+  <div class="large-1 columns pink">large-1</div>
+  <div class="large-9 large-offset-2 columns brown">large-9 large-offset-2</div>
+</div>
+<div class="row">
+  <div class="large-1 columns red">large-1</div>
+  <div class="large-8 large-offset-3 columns blue">large-8 large-offset-3</div>
+</div>
+
+<!-- コンテンツはここまでです -->
+
+  <script>
+  document.write('<script src=' +
+  ('__proto__' in {} ? 'js/vendor/zepto' : 'js/vendor/jquery') +
+  '.js><\/script>')
+  </script>
+  
+  <script src="js/foundation.min.js"></script>
+  <script>
+    $(document).foundation();
+  </script>
+</body>
+</html>

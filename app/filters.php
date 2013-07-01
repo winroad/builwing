@@ -13,7 +13,12 @@
 
 App::before(function($request)
 {
-	//
+/*ユーザーエージェントによる振り分け
+$ua=$_SERVER['HTTP_USER_AGENT'];
+//iPone,iPod,Androidの文字を含んでいたら				if((strpos($ua,'iPhone'))||(strpos($ua,'iPod')!==false)||(strpos($ua,'Android')!==false)) {
+	return 'mobile';
+	}
+	return 'PC';*/
 });
 
 
@@ -33,9 +38,17 @@ App::after(function($request, $response)
 |
 */
 
-Route::filter('auth', function()
-{
-	if (Auth::guest()) return Redirect::guest('login');
+Route::filter('auth', function(){
+	if (Auth::guest()) return Redirect::guest('user/login');
+});
+
+Route::filter('admin', function(){
+	//ログインしていなければ、ログインページへ
+	if(Auth::guest()) return Redirect::guest('user/login');
+	//ログインしていてもAdminで無ければ、Userページへ
+	if(Auth::user()->role_id<>1){
+		return Redirect::intended('user');
+	}
 });
 
 

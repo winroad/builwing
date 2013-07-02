@@ -33,7 +33,13 @@
 			<li>{{ HTML::link('admin/user','登録ユーザー') }}</li>
 			<li>{{ HTML::link('admin/deleted','削除ユーザー') }}</li>
 			<li>{{ HTML::link('admin/create','ユーザー作成') }}</li>
-			<li>{{ HTML::link('#','その他') }}</li>
+			<li class="has-dropdown">
+      {{ HTML::link('#','その他') }}
+      	<ul class="dropdown">
+					<li>{{ HTML::link('item/create','item作成') }}</li>
+					<li>{{ HTML::link('category/create','category作成') }}</li>
+      	</ul>
+      </li>
 		</ul>
 	</li>
 	<li class="divider"></li>

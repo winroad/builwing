@@ -27,6 +27,14 @@
   </tr>
   <tr>
     <td>6</td>
+    <td>{{ HTML::link('setup/items','itemsテーブルの作成') }}</td>
+  </tr>
+  <tr>
+    <td>7</td>
+    <td>{{ HTML::link('setup/categories','catagoriesテーブルの作成') }}</td>
+  </tr>
+  <tr>
+    <td>8</td>
     <td>{{ HTML::link('setup/all','上記全テーブルの一括作成') }}</td>
   </tr>
 </table>

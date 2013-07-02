@@ -20,3 +20,5 @@ Route::controller('setup','SetupController');
 Route::controller('user','UserController');
 Route::controller('admin','AdminController');
 Route::controller('profile','ProfileController');
+Route::controller('item','ItemController');
+Route::controller('category','CategoryController');

@@ -192,6 +192,63 @@ public function getBelongs(){
 		$data['warning']='belongsテーブルを作成しました。';
 		return View::make('setup/index',$data);
 	}
+	
+/*
+|---------------------------------------------
+|	items(項目)テーブルの作成
+|---------------------------------------------
+|	1. 項目管理用のテーブル
+|	2. profilesやbelongsで使用予定
+*/
+	public function getItems(){
+	//itemsテーブルの存在確認
+ 	if(Schema::hasTable('items')){
+		$data['warning']='itemsテーブルが存在しますので、処理を中止します。';
+		return View::make('setup/index',$data);
+	}
+	//itemsテーブルの作成
+ 	Schema::create('items',function($table){
+ 		$table->increments('id');
+		//iteme名
+		$table->string('name',100);
+		//分類コード
+		$table->integer('category_id')->nullable();
+ 		//created_atとupdated_atの同時作成
+ 		$table->timestamps();
+		//deleted_atカラムを追加
+		$table->timestamp('deleted_at')->nullable();		
+ 	});
+		$data['warning']='itemsテーブルを作成しました。';
+		return View::make('setup/index',$data);
+	}
+/*
+|---------------------------------------------
+|	category(分類)テーブルの作成
+|---------------------------------------------
+|	1. 分類項目管理用のテーブル
+|	2. profilesやbelongsで使用予定
+*/
+	public function getCategories(){
+	//categoriesテーブルの存在確認
+ 	if(Schema::hasTable('categories')){
+		$data['warning']='categoriesテーブルが存在しますので、処理を中止します。';
+		return View::make('setup/index',$data);
+	}
+	//categoriesテーブルの作成
+ 	Schema::create('categories',function($table){
+ 		$table->increments('id');
+		//categorye名
+		$table->string('name',50);
+		//categoryの説明
+		$table->text('description')->nullable();
+ 		//created_atとupdated_atの同時作成
+ 		$table->timestamps();
+		//deleted_atカラムを追加
+		$table->timestamp('deleted_at')->nullable();		
+ 	});
+		$data['warning']='categoriesテーブルを作成しました。';
+		return View::make('setup/index',$data);
+	}
 /*
 |---------------------------------------------
 |	users関連テーブルの一括作成

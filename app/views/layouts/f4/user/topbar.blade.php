@@ -52,7 +52,7 @@ Builwing
 <li class="has-dropdown">
 <a href="#">{{ Auth::user()->name }}</a>
 <ul class="dropdown">
-<li>{{ HTML::link('#','プロフィール') }}</li>
+<li>{{ HTML::link('profile/view/'.Auth::user()->id,'プロフィール') }}</li>
 <li>{{ HTML::link('#','設定変更') }}</li>
 <li class="divider"></li>
 <li>{{ HTML::link('user/logout','ログアウト') }}</li>

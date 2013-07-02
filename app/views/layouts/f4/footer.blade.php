@@ -23,15 +23,8 @@
         <div class="large-8 columns">
           <ul class="inline-list right">
             <li>{{ HTML::link('/','TOP') }}</li>
-            @if(Auth::user()->role_id==1)
-            <li>{{ HTML::link('admin','管理室') }}</li>
-            @endif
-            @if(Auth::check())
             <li>{{ HTML::link('user','マイページへ') }}</li>
-            <li>{{ HTML::link('user/logout','Logout') }}</li>
-            @else
-            <li>{{ HTML::link('user','マイページへ') }}</li>
-            @endif
+            <li>{{ HTML::link('admin','管理室へ') }}</li>
           </ul>
         </div><!--/large-8 columns-->
       </div><!--/row full-width-->

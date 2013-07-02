@@ -55,6 +55,8 @@ public function getProfiles(){
  		$table->increments('id');
 		//usersテーブルへのリレーション用
 		$table->integer('user_id')->nullable();
+		//電話番号
+		$table->string('tel',20)->nullable();
 		//address関連情報（シリアライズ）
 		$table->text('address')->nullable();
 		//身体関連情報(シリアライズ)
@@ -245,9 +247,11 @@ public function getAll(){
 	}
 	//profilesテーブルの作成
  	Schema::create('profiles',function($table){
+ 		$table->increments('id');
 		//usersテーブルへのリレーション用
 		$table->integer('user_id')->nullable();
- 		$table->increments('id');
+		//電話番号
+		$table->string('tel',20)->nullable();
 		//address関連情報（シリアライズ）
 		$table->text('address')->nullable();
 		//身体関連情報(シリアライズ)

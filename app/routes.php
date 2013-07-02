@@ -12,9 +12,11 @@
 */
 
 Route::get('/', function(){
-	return View::make('hello');
+	//return View::make('hello');
+	return var_dump(Profile::item('body'));
 });
 
 Route::controller('setup','SetupController');
 Route::controller('user','UserController');
 Route::controller('admin','AdminController');
+Route::controller('profile','ProfileController');

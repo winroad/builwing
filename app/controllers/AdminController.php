@@ -177,4 +177,59 @@ class AdminController extends BaseController{
 		return Redirect::back()
 			->with('waning','ユーザーを復活させました');
 	}
+/*
+|------------------------------------
+| グループの表示
+|------------------------------------
+*/
+	public function getGroup(){
+		$data['groups']=Group::all();
+		return View::make('admin/group/index',$data);
+	}
+	public function getGroupView($id){
+		$data['group']=Group::find($id);
+		$data['belongs']=Belong::where('group_id','=',$id)
+			->orderBy('id','desc')
+			->first();
+		return View::make('admin/group/view',$data);
+	}
+/*
+|------------------------------------
+| グループの新規作成
+|------------------------------------
+*/
+	public function getGroupCreate(){
+	 //所属名リスト作成
+	 $data['groups']=Group::orderBy('id','desc')->lists('name','id');
+	 $data['belongs']=Belong::orderBy('id','desc')->lists('name','id');
+		return View::make('admin/group/create',$data);
+	}
+	public function postGroupCreate(){
+		$inputs=Input::all();
+ 		//バリデーションの指定
+		 $rules=array(
+ 			'name'=>'required',
+ 			'abbreviation'=>'required',
+ 		);
+ 		//バリデーションチェック
+		 $val=Validator::make($inputs,$rules);
+ 		//バリデーションNGなら
+ 		if($val->fails()){
+			 return Redirect::back()
+ 				->withErrors($val)
+ 				->withInput();
+ 		}
+ 	$group=Group::create($inputs);
+	//グループ一覧へリダイレクト
+	return Redirect::to('admin/group')
+		->with('warning','グループを作成しました');
+	}
+/*
+|------------------------------------
+| グループの更新
+|------------------------------------
+*/
+	public function getGroupUpdate(){
+		return View::make('admin/group/update');
+	}
 }

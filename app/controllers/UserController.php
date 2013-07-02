@@ -124,5 +124,4 @@ class UserController extends BaseController{
 	 Auth::logout();
 	 return Redirect::to('/');
  }
-
 }

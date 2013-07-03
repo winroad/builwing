@@ -9,7 +9,7 @@ class Item extends Eloquent{
 | 1対多関係のリレーション
 |------------------------------------
 | ItemはCategoryに属している
-| Item::find(1)->categories;
+| Item::find(1)->category;
 | でItemのcategoryへアクセスできます。
 |
 */

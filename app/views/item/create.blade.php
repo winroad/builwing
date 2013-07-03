@@ -15,7 +15,7 @@
     </h5>
 	@endif
   {{ Form::label('カテゴリ') }}
-  {{ Form::select('category_id',$categories) }}
+  {{ Form::select('category_id',$category) }}
   {{ Form::submit('送信',array('class'=>'button')) }}
   {{ Form::close() }}
 @stop

@@ -10,7 +10,11 @@
     <td>{{$profile->tel}}</td>
   </tr>
   <tr>
-    <th scope="row">{{ HTML::link('profile/item/address','住所情報') }}</th>
+    <th scope="row">Eメール</th>
+    <td>{{$profile->user->email }}</td>
+  </tr>
+  <tr>
+    <th scope="row">{{ HTML::link('profile/create/address','住所情報') }}</th>
     <td>
     @if($address)
     @foreach($address as $key=>$value)
@@ -20,7 +24,7 @@
     </td>
   </tr>
   <tr>
-    <th scope="row">{{ HTML::link('profile/item/body','身体情報') }}</th>
+    <th scope="row">{{ HTML::link('profile/create/body','身体情報') }}</th>
     <td>
     @if($body)
     @foreach($body as $key=>$value)
@@ -30,7 +34,7 @@
     </td>
   </tr>
   <tr>
-    <th scope="row">{{ HTML::link('profile/item/license','資格情報') }}</th>
+    <th scope="row">{{ HTML::link('profile/create/license','資格情報') }}</th>
     <td>
     @if($license)
     @foreach($license as $key=>$value)
@@ -40,7 +44,7 @@
     </td>
   </tr>
   <tr>
-    <th scope="row">{{ HTML::link('profile/item/labor','労務情報') }}</th>
+    <th scope="row">{{ HTML::link('profile/create/labor','労務情報') }}</th>
     <td>
     @if($labor)
     @foreach($labor as $key=>$value)
@@ -50,7 +54,7 @@
     </td>
   </tr>
   <tr>
-    <th scope="row">{{ HTML::link('profile/item/family','家族情報') }}</th>
+    <th scope="row">{{ HTML::link('profile/create/family','家族情報') }}</th>
     <td>
     @if($family)
     @foreach($family as $key=>$value)

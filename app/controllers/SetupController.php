@@ -238,7 +238,7 @@ public function getBelongs(){
  	Schema::create('categories',function($table){
  		$table->increments('id');
 		//categorye名
-		$table->string('name',50);
+		$table->string('name',50)->unique();
 		//categoryの説明
 		$table->text('description')->nullable();
  		//created_atとupdated_atの同時作成

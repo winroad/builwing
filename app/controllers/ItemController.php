@@ -17,7 +17,7 @@ class ItemController extends BaseController{
  }
  //新規項目の作成
 	public function getCreate(){
-		$data['categories']=Category::all()->lists('name','id');
+		$data['category']=Category::all()->lists('description','id');
 		return View::make('item/create',$data);
 	}
 	public function postCreate(){

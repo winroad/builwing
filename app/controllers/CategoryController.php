@@ -17,7 +17,7 @@ class CategoryController extends BaseController{
  }
  //新規分類項目の作成
 	public function getCreate(){
-		$data['categories']=Item::all();
+		$data['category']=Item::all();
 		return View::make('category/create',$data);
 	}
 	public function postCreate(){

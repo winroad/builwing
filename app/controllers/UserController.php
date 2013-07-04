@@ -124,4 +124,10 @@ class UserController extends BaseController{
 	 Auth::logout();
 	 return Redirect::to('/');
  }
+ 
+ //テスト用
+ public function getOK(){
+	 $a=Tb::ok('中田');
+	 return var_dump($a->role_id);
+ }
 }

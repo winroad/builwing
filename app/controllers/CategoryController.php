@@ -13,7 +13,7 @@ class CategoryController extends BaseController{
  }
  
  public function getIndex(){
-	 echo 'getIndexです。';
+	 return'getIndexです';
  }
  //新規分類項目の作成
 	public function getCreate(){

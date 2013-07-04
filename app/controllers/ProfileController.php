@@ -24,8 +24,10 @@ class ProfileController extends BaseController{
 	}
 /*
 |----------------------------------------
-| 新規作成ページ
+| 新規入力ページ
 |----------------------------------------
+| 新規フィールドの作成ではなくて、
+| カテゴリ内の未入力項目データ入力
 */
 	public function getCreate($column){
 		//itemsテーブルの未入力データを取得
@@ -105,5 +107,118 @@ class ProfileController extends BaseController{
 		}
 			return Redirect::action('ProfileController@getCreate')
 					->with('message','プロフィールを作成してください');
+	}
+/*
+|----------------------------------------
+| データ更新ページ
+|----------------------------------------
+|	Historyに履歴を保存します。
+|
+*/
+	public function getUpdateList(){
+		$data['profile']=Profile::owner()->first();
+		$data['address']=Profile::item('address');
+		$data['body']=Profile::item('body');
+		$data['license']=Profile::item('license');
+		$data['labor']=Profile::item('labor');
+		$data['family']=Profile::item('family');
+		$data['note']=Profile::item('note');
+		return View::make('profile/update-list',$data);
+	}
+	
+	public function getUpdate($cat,$itm){
+		//データの取得
+		$data['cat']=$cat;
+		$data['itm']=array_only(Profile::item($cat),array('name',$itm));
+		//データ更新ページの表示
+		return View::make('profile/update',$data);
+	}
+	
+	public function postUpdate(){
+		//return var_dump(Input::all());
+		$cat=Input::get('cat');
+		$itm=Input::get('itm');
+		//$old_itm=Input::get('old_itm');
+		//データ受信
+		$inputs=Input::except('_token','cat','itm','reason','old_itm');
+		//バリルール
+		foreach($inputs as $key=>$value){
+			$rules=array($key=>'required');
+		}
+		//バリ処理
+		$val=Validator::make($inputs,$rules);
+		//バリNGなら
+		if($val->fails()){
+			return Redirect::back()
+				->withInput()
+				->withErrors($val);
+		}
+		 
+	//旧データと新データが同じで無ければ
+	if(Input::get('old_itm') != Input::get($key)){
+		
+		/*******************
+		* データ更新処理
+		********************/
+			 
+		//受け取ったカテゴリの配列を取得
+		$old_pro=Profile::item($cat);
+		//受け取ったデータで旧データに修正
+		$new_pro=array_merge($old_pro,$inputs);
+		//受け取ったデータをシリアライズ
+		$new_pro=serialize($new_pro);
+		//受け取ったデータを保存
+		$pro=Profile::owner()->first();
+		$pro->$cat=$new_pro;
+		$pro->save();
+		
+		/***********************
+		 * 更新履歴処理
+		 ***********************/
+		 
+		//更新履歴の必要項目取得
+		$user_id=Auth::user()->id;
+		$profile_id=Profile::owner()->pluck('id');
+		$item_id=Item::where('name','=',$itm)->pluck('id');
+		//古い項目データの取得
+		$old_itm=Input::get('old_itm');
+		//新しい項目データの取得
+		$new_itm=Input::get($key);
+		$reason=Input::get('reason');
+		
+		$profile=Profile::find($profile_id);
+		//更新履歴
+		$history=new History();
+		$history->user_id=$user_id;
+		$history->profile_id=$profile_id;
+		$history->item_id=$item_id;
+		$history->old=$old_itm;
+		$history->new=$new_itm;
+		if(isset($reason)){
+			$history->reason=$reason;
+			}
+		//プロフィール
+		$profile=Profile::find($profile_id);
+		$profile->history()->save($history);
+			
+	}
+		//トップページへ戻る
+		return Redirect::to('profile/view/'.Auth::user()->id);
+	}
+/*
+|----------------------------------------
+| データ更新履歴
+|----------------------------------------
+*/
+	public function getHistory(){
+		$history=History::owner();
+	}	
+	
+	public function getSample(){
+		$a=$this->item('address');
+		return var_dump($a);
+	}
+	public function getSample2(){
+		return var_dump(item('address'));
 	}
 }

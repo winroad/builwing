@@ -21,6 +21,7 @@ public function getUsers(){
  		$table->tinyinteger('activate')->default(0);
  		$table->integer('role_id')->nullable();
  		$table->integer('group_id')->nullable();
+ 		$table->integer('profile_id')->nullable();
  		//created_atとupdated_atの同時作成
  		$table->timestamps();
 		//deleted_atカラムを追加
@@ -249,6 +250,110 @@ public function getBelongs(){
 		$data['warning']='categoriesテーブルを作成しました。';
 		return View::make('setup/index',$data);
 	}
+/*
+|---------------------------------------------
+|	histories(履歴)テーブルの作成
+|---------------------------------------------
+|	履歴管理のテーブル
+*/
+	public function getHistories(){
+	//categoriesテーブルの存在確認
+ 	if(Schema::hasTable('histories')){
+		$data['warning']='historiesテーブルが存在しますので、処理を中止します。';
+		return View::make('setup/index',$data);
+	}
+	//categoriesテーブルの作成
+ 	Schema::create('histories',function($table){
+ 		$table->increments('id');
+		//更新者ID
+		$table->integer('user_id');
+		//プロフィーID
+		$table->integer('profile_id');
+		//更新項ID
+		$table->integer('item_id');
+		//更新前データ
+		$table->text('old');
+		//更新後データ
+		$table->text('new');
+		//更新理由
+		$table->text('reason')->nullable();
+ 		//created_atとupdated_atの同時作成
+ 		$table->timestamps();
+		//ソフトデリート用
+		$table->softDeletes();	
+ 	});
+		$data['warning']='historiesテーブルを作成しました。';
+		return View::make('setup/index',$data);
+	}
+/*
+|---------------------------------------------
+|	tables(テーブル管理用)テーブルの作成
+|---------------------------------------------
+|	テーブル管理用のテーブル
+*
+	public function getTables(){
+	//tablesテーブルの存在確認
+ 	if(Schema::hasTable('tables')){
+		$data['warning']='tablesテーブルが存在しますので、処理を中止します。';
+		return View::make('setup/index',$data);
+	}
+	//categoriesテーブルの作成
+ 	Schema::create('tables',function($table){
+ 		$table->increments('id');
+		//テーブル名
+		$table->string('name',100);
+		//テーブルの説明
+		$table->text('description')->nullable();
+ 		//created_atとupdated_atの同時作成
+ 		$table->timestamps();
+		//ソフトデリート用
+		$table->softDeletes();	
+ 	});
+	//基本テーブルの作成
+	Table::create(array(
+		'name'=>'users',
+		));
+	Table::create(array(
+		'name'=>'profiles',
+		));
+	Table::create(array(
+		'name'=>'groups',
+		));
+	Table::create(array(
+		'name'=>'belongs',
+		));
+	
+		$data['warning']='tablesテーブルを作成しました。';
+		return View::make('setup/index',$data);
+	}*/
+		
+/*
+|---------------------------------------------
+|	history_profileピポットテーブルの作成
+|---------------------------------------------
+|	HistoryとProfileテーブル管理用のテーブル
+*/
+	public function getHistoryProfile(){
+	//history_profilesテーブルの存在確認
+ 	if(Schema::hasTable('history_profile')){
+		$data['warning']='history_profileテーブルが存在しますので、処理を中止します。';
+		return View::make('setup/index',$data);
+	}
+	//categoriesテーブルの作成
+ 	Schema::create('history_profile',function($table){
+ 		$table->increments('id');
+		//更新履歴
+		$table->integer('history_id');
+		//テーブル
+		$table->integer('profile_id');
+		//ソフトデリート用
+		$table->softDeletes();	
+ 	});
+		$data['warning']='history_profileピポットテーブルを作成しました。';
+		return View::make('setup/index',$data);
+	}
+	
+	
 /*
 |---------------------------------------------
 |	users関連テーブルの一括作成

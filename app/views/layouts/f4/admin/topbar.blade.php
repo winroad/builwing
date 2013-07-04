@@ -12,12 +12,15 @@
 <!--左メニュー開始-->
 <ul><!--タイトルエリアの終了-->
 	<li class="divider"></li>
+  @section('search')
 	{{ Form::open(array('url'=>'admin/user')) }}
+  @show
 	<li>
 		<div class="small-10 large-centered columns">
 			<div class="row collapse">
 				<div class="small-8 columns">
-					{{ Form::text('search','',array('placeholder'=>'ユーザー検索')) }}</div>
+					{{ Form::text('search','',array('placeholder'=>'検索')) }}
+          </div>
 				<div class="small-4 columns">
 					{{ Form::submit('検索',array('class'=>'button')) }}</div>
   	</div>
@@ -56,7 +59,7 @@
 	<li class="has-dropdown">
 		<a href="#">ログ管理</a>
 		<ul class="dropdown">
-			<li>{{ HTML::link('#','一覧') }}</li>
+			<li>{{ HTML::link('history/index','更新履歴') }}</li>
 			<li>{{ HTML::link('#','その他') }}</li>
 		</ul>
 	</li>

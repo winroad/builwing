@@ -35,6 +35,18 @@
   </tr>
   <tr>
     <td>8</td>
+    <td>{{ HTML::link('setup/histories','更新履歴テーブルの作成') }}</td>
+  </tr>
+  <tr>
+    <td>9</td>
+    <td>{{ HTML::link('setup/history-profile','ピポットテーブルの作成') }}</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>12</td>
     <td>{{ HTML::link('setup/all','上記全テーブルの一括作成') }}</td>
   </tr>
 </table>

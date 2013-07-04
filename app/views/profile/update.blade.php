@@ -7,22 +7,24 @@
 </div>
 @else
 <div data-alert class="alert-box success radius">
-項目作成です。
+項目修正です。
 </div>
 @endif
 	{{ Form::open(array('url'=>'profile/update')) }}
-  {{ Form::label('電話番号') }}
-  {{ Form::text('tel',Auth::user()->tel) }}
-  @if($errors->has('tel'))
+  @foreach($itm as $key=>$value)
+  {{ Form::label($key) }}
+  {{ Form::text($key,$value,array('style'=>'ime-mode:active')) }}
+  @if($errors->has($key))
 		<h5 style="color:red;text-align:center">
-    {{ $errors->first('tel') }}
+    {{ $errors->first($key) }}
     </h5>
 	@endif
-  @foreach($items as $key=>$value)
-  	{{ Form::label($key) }}
-    {{ Form::text($value) }}
   @endforeach
-  {{ Form::hidden('user_id',Auth::user()->id) }}
+  {{ Form::label('変更理由') }}
+  {{ Form::text('reason','',array('style'=>'ime-mode:active')) }}
+  {{ Form::hidden('cat',$cat) }}
+  {{ Form::hidden('old_itm',$value) }}
+  {{ Form::hidden('itm',$key) }}
   {{ Form::submit('送信',array('class'=>'button')) }}
   {{ Form::close() }}
 @stop

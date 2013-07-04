@@ -8,7 +8,11 @@ class Profile extends Eloquent{
 |--------------------------------------------
 */
 	public function user(){
-	return $this->belongsTo('User');
+	return $this->hasOne('User');
+	}
+	
+	public function history(){
+	return $this->belongsToMany('History');
 	}
 	
 /*
@@ -53,5 +57,14 @@ class Profile extends Eloquent{
 			//項目がNULLなら
 			return null;
 		}
+	}
+/*
+|--------------------------------------------
+| スコープ
+|--------------------------------------------
+*/
+	public function scopeOwner($query){
+		 return $query->where('user_id','=',Auth::user()->id)
+						->orderBy('created_at','desc');
 	}
 }

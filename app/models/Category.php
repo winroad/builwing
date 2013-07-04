@@ -8,12 +8,12 @@ class Category extends Eloquent{
 | 1対多関係のリレーション
 |------------------------------------
 | CategoryはたくさんのItemを持つ
-| Category::find(1)->items;
+| Category::find(1)->item;
 | でCategoryのItemへアクセスできます。
 |
 */
  //1対多関係のリレーション
-	public function items(){
+	public function item(){
 		return $this->hasMany('Item');
 	}
 }

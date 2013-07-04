@@ -75,6 +75,9 @@ return $this->belongsTo('Role');
 public function group(){
 return $this->belongsTo('Group');
 }
+public function profile(){
+return $this->hasOne('Profile');
+}
 /*
 |--------------------------------------------
 | ソフトデリートの設定

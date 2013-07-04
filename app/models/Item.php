@@ -13,7 +13,11 @@ class Item extends Eloquent{
 | でItemのcategoryへアクセスできます。
 |
 */
-	public function categories(){
+	public function category(){
 		return $this->belongsTo('Category');
+	}
+	
+	public function history(){
+		return $this->hasMany('History');
 	}
 }

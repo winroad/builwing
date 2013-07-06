@@ -78,6 +78,9 @@ return $this->belongsTo('Group');
 public function profile(){
 return $this->hasOne('Profile');
 }
+public function labor(){
+return $this->hasOne('Labor');
+}
 /*
 |--------------------------------------------
 | ソフトデリートの設定

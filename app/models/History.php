@@ -28,14 +28,10 @@ class History extends Eloquent{
 | クエリースコープ
 |---------------------------------------------
 */
+	//ログイン中のユーザーの更新履歴を取得
 	public function scopeOwner($query){
-		//ユーザーの更新履歴取得
 		$query->where('user_id','=',Auth::user())
 				->orderBy('created_at','desc')
 				->get();
-	}
-	public function scopeTb($query){
-		//全ての更新データ取得
-			return $query->orderBy('created_at','desc');
 	}
 }

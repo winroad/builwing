@@ -11,9 +11,9 @@
 |
 */
 
-Route::get('/', function(){
+Route::get('/', array('before'=>'auth',function(){
 	return View::make('hello');
-});
+}));
 
 Route::controller('setup','SetupController');
 Route::controller('user','UserController');
@@ -21,8 +21,10 @@ Route::controller('admin','AdminController');
 Route::controller('profile','ProfileController');
 Route::controller('category','CategoryController');
 Route::controller('item','ItemController');
+Route::controller('history','HistoryController');
+Route::controller('post','PostController');
+Route::controller('message','MessageController');
 
-Route::get('sample', function(){
-	$data['roles']=Role::lists('name','level');
-	return View::make('sample',$data);
+View::composer('admin/*',function($view){
+	$view->with('count',User::count());
 });

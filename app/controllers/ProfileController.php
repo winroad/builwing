@@ -29,7 +29,7 @@ class ProfileController extends BaseController{
 | 新規フィールドの作成ではなくて、
 | カテゴリ内の未入力項目データ入力
 */
-	public function getCreate($column){
+	public function getCreate($column=null){
 		//itemsテーブルの未入力データを取得
 		$data['items']=Profile::item($column,true);
 		//配列数が0なら
@@ -112,8 +112,6 @@ class ProfileController extends BaseController{
 |----------------------------------------
 | データ更新ページ
 |----------------------------------------
-|	Historyに履歴を保存します。
-|
 */
 	public function getUpdateList(){
 		$data['profile']=Profile::owner()->first();
@@ -135,10 +133,8 @@ class ProfileController extends BaseController{
 	}
 	
 	public function postUpdate(){
-		//return var_dump(Input::all());
 		$cat=Input::get('cat');
 		$itm=Input::get('itm');
-		//$old_itm=Input::get('old_itm');
 		//データ受信
 		$inputs=Input::except('_token','cat','itm','reason','old_itm');
 		//バリルール
@@ -197,28 +193,13 @@ class ProfileController extends BaseController{
 		if(isset($reason)){
 			$history->reason=$reason;
 			}
-		//プロフィール
+		//修正プロフィールを取得
 		$profile=Profile::find($profile_id);
+		//更新履歴を保存
 		$profile->history()->save($history);
 			
 	}
 		//トップページへ戻る
 		return Redirect::to('profile/view/'.Auth::user()->id);
-	}
-/*
-|----------------------------------------
-| データ更新履歴
-|----------------------------------------
-*/
-	public function getHistory(){
-		$history=History::owner();
-	}	
-	
-	public function getSample(){
-		$a=$this->item('address');
-		return var_dump($a);
-	}
-	public function getSample2(){
-		return var_dump(item('address'));
 	}
 }

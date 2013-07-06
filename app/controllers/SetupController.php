@@ -19,9 +19,14 @@ public function getUsers(){
  		$table->string('password',64);
  		$table->string('onepass');
  		$table->tinyinteger('activate')->default(0);
+		//権限管理ID
  		$table->integer('role_id')->nullable();
+		//グループ管理ID
  		$table->integer('group_id')->nullable();
+		//プロフィールID
  		$table->integer('profile_id')->nullable();
+		//労務管理ID
+ 		$table->integer('labor_id')->nullable();
  		//created_atとupdated_atの同時作成
  		$table->timestamps();
 		//deleted_atカラムを追加
@@ -46,12 +51,12 @@ public function getUsers(){
 |---------------------------------------------
 */
 public function getProfiles(){
-	//usersテーブルの存在確認
+	//profilesテーブルの存在確認
  	if(Schema::hasTable('profiles')){
 		$data['warning']='profilesテーブルが存在しますので、処理を中止します。';
 		return View::make('setup/index',$data);
 	}
-	//usersテーブルの作成
+	//profilesテーブルの作成
  	Schema::create('profiles',function($table){
  		$table->increments('id');
 		//usersテーブルへのリレーション用
@@ -70,6 +75,10 @@ public function getProfiles(){
  		$table->text('family')->nullable();
 		//その他(シリアライズ)
  		$table->text('note')->nullable();
+		//メッセージ(シリアライズ)......未読メッセージ用
+ 		$table->text('message')->nullable();
+		//TODO(シリアライズ)......未処理TODO用
+ 		$table->text('todo')->nullable();
  		//created_atとupdated_atの同時作成
  		$table->timestamps();
 		//deleted_atカラムを追加
@@ -106,14 +115,18 @@ public function getRoles(){
 			));
 	Role::create(array(
 			'name'=>'Manager',
-			'level'=>70,
+			'level'=>90,
 			));
 	Role::create(array(
 			'name'=>'Moderator',
-			'level'=>50,
+			'level'=>80,
 			));
 	Role::create(array(
 			'name'=>'Staff',
+			'level'=>50,
+			));
+	Role::create(array(
+			'name'=>'Outsourcing',
 			'level'=>30,
 			));
 	Role::create(array(
@@ -257,12 +270,12 @@ public function getBelongs(){
 |	履歴管理のテーブル
 */
 	public function getHistories(){
-	//categoriesテーブルの存在確認
+	//historiesテーブルの存在確認
  	if(Schema::hasTable('histories')){
 		$data['warning']='historiesテーブルが存在しますので、処理を中止します。';
 		return View::make('setup/index',$data);
 	}
-	//categoriesテーブルの作成
+	//historiesテーブルの作成
  	Schema::create('histories',function($table){
  		$table->increments('id');
 		//更新者ID
@@ -339,7 +352,7 @@ public function getBelongs(){
 		$data['warning']='history_profileテーブルが存在しますので、処理を中止します。';
 		return View::make('setup/index',$data);
 	}
-	//categoriesテーブルの作成
+	//history_categoryテーブルの作成
  	Schema::create('history_profile',function($table){
  		$table->increments('id');
 		//更新履歴
@@ -353,7 +366,182 @@ public function getBelongs(){
 		return View::make('setup/index',$data);
 	}
 	
+/*
+|---------------------------------------------
+|	posts(投稿)テーブルの作成
+|---------------------------------------------
+*/
+	public function getPosts(){
+ 	if(Schema::hasTable('posts')){
+		$data['warning']='postsテーブルが存在しますので、処理を中止します。';
+		return View::make('setup/index',$data);
+	}
+ 	Schema::create('posts',function($table){
+ 		$table->increments('id');
+		//投稿者ID
+		$table->integer('submitter_id');
+		//受信者ID（個人宛ポストの場合）
+		$table->integer('recipient_id')->nullable();
+		//受信グループID
+		$table->integer('group_id')->nullable();
+		//受信RoleID
+		$table->integer('role_id')->nullable();
+		//表題
+		$table->string('subject',200);
+		//投稿内容
+		$table->text('body');
+ 		//created_atとupdated_atの同時作成
+ 		$table->timestamps();
+		//ソフトデリート用
+		$table->softDeletes();	
+ 	});
+		$data['warning']='postsテーブルを作成しました。';
+		return View::make('setup/index',$data);
+	}
+/*
+|---------------------------------------------
+|	comments(コメント)テーブルの作成
+|---------------------------------------------
+*/
+	public function getComments(){
+ 	if(Schema::hasTable('comments')){
+		$data['warning']='commentsテーブルが存在しますので、処理を中止します。';
+		return View::make('setup/index',$data);
+	}
+ 	Schema::create('comments',function($table){
+ 		$table->increments('id');
+		//投稿者ID
+		$table->integer('submitter_id');
+		//受信者ID（個人宛ポストの場合）
+		$table->integer('recipient_id');
+		//コメント内容
+		$table->text('body');
+ 		//created_atとupdated_atの同時作成
+ 		$table->timestamps();
+		//ソフトデリート用
+		$table->softDeletes();	
+ 	});
+		$data['warning']='commentsテーブルを作成しました。';
+		return View::make('setup/index',$data);
+	}
+/*
+|---------------------------------------------
+|	comment_postテーブルの作成
+|---------------------------------------------
+*/
+	public function getCommentPost(){
+ 	if(Schema::hasTable('comment_post')){
+		$data['warning']='comment_postテーブルが存在しますので、処理を中止します。';
+		return View::make('setup/index',$data);
+	}
+ 	Schema::create('comment_post',function($table){
+ 		$table->increments('id');
+		//ポストID
+		$table->integer('post_id');
+		//コメントID
+		$table->integer('comment_id');
+ 		//created_atとupdated_atの同時作成
+ 		$table->timestamps();
+		//ソフトデリート用
+		$table->softDeletes();	
+ 	});
+		$data['warning']='comment_postテーブルを作成しました。';
+		return View::make('setup/index',$data);
+	}
 	
+/*
+|---------------------------------------------
+|	labors(労務管理）テーブルの作成
+|---------------------------------------------
+*/
+	public function getLabors(){
+ 	if(Schema::hasTable('labors')){
+		$data['warning']='laborsテーブルが存在しますので、処理を中止します。';
+		return View::make('setup/index',$data);
+	}
+ 	Schema::create('labors',function($table){
+ 		$table->increments('id');
+		//ユーザーID
+		$table->integer('user_id');
+		//未読メッセージの配列（シリアライズ）
+		$table->text('message')->nullable();
+		//未処理TODOの配列（シリアライズ）
+		$table->text('todo')->nullable();
+ 		//created_atとupdated_atの同時作成
+ 		$table->timestamps();
+		//ソフトデリート用
+		$table->softDeletes();	
+ 	});
+		$data['warning']='laborsテーブルを作成しました。';
+		return View::make('setup/index',$data);
+	}
+	
+/*
+|---------------------------------------------
+|	TODOテーブルの作成
+|---------------------------------------------
+*/
+	public function getTodo(){
+ 	if(Schema::hasTable('todo')){
+		$data['warning']='todosテーブルが存在しますので、処理を中止します。';
+		return View::make('setup/index',$data);
+	}
+ 	Schema::create('todo',function($table){
+ 		$table->increments('id');
+		//ユーザーID
+		$table->integer('user_id');
+		//TODOのカテゴリ
+		$table->integer('category_id');
+		//TODOのタイトル
+		$table->string('title',200);
+		//仕事詳細
+		$table->text('body');
+		//期日
+		$table->date('deadline')->nullable();
+		//完了日
+		$table->date('complete')->nullable();
+		//メモ
+		$table->text('memo')->nullable();
+		//重要度(1～10の数値で重要度を表す）
+		$table->smallInteger('priority')->nullable();
+ 		//created_atとupdated_atの同時作成
+ 		$table->timestamps();
+		//ソフトデリート用
+		$table->softDeletes();	
+ 	});
+		$data['warning']='todoテーブルを作成しました。';
+		return View::make('setup/index',$data);
+	}
+/*
+|---------------------------------------------
+|	messagesテーブルの作成
+|---------------------------------------------
+*/
+	public function getMessages(){
+ 	if(Schema::hasTable('messages')){
+		$data['warning']='messagesテーブルが存在しますので、処理を中止します。';
+		return View::make('setup/index',$data);
+	}
+ 	Schema::create('messages',function($table){
+ 		$table->increments('id');
+		//送信者ID
+		$table->integer('sender_id');
+		//受信者ID（個人宛ポストの場合）
+		$table->integer('recipient_id')->nullable();
+		//受信RoleID
+		$table->integer('role_id')->nullable();
+		//タイトル
+		$table->string('subject',200);
+		//メッセージ内容
+		$table->text('body');
+ 		//created_atとupdated_atの同時作成
+ 		$table->timestamps();
+		//ソフトデリート用
+		$table->softDeletes();	
+ 	});
+		$data['warning']='messagesテーブルを作成しました。';
+		return View::make('setup/index',$data);
+	}
 /*
 |---------------------------------------------
 |	users関連テーブルの一括作成

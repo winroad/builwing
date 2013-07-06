@@ -8,10 +8,18 @@ class UserController extends BaseController{
  public function __construct(){
  //authフィルター
  $this->beforeFilter('auth',array(
- //フィルター適用の指定
- 'only'=>array('getIndex')));
+ 			'only'=>array('getIndex')));
  //全POSTにcsrfフィルターの適用
  $this->beforeFilter('csrf',array('on'=>'post'));
+ }
+ 
+ private function labor(){
+	 $labor=Labor::where('user_id',Auth::user()->id)->get();
+	 if(count($labor) == 0){
+		 return '0です';
+	 }else{
+		 return count($labor).'件のメッセージがあります。';
+	 }
  }
 /*
 |------------------------------------
@@ -19,6 +27,8 @@ class UserController extends BaseController{
 |------------------------------------
 */
  public function getIndex(){
+	 //return $this->labor();
+	 
 	 return View::make('user/index');
  }
 /*
@@ -125,9 +135,4 @@ class UserController extends BaseController{
 	 return Redirect::to('/');
  }
  
- //テスト用
- public function getOK(){
-	 $a=Tb::ok('中田');
-	 return var_dump($a->role_id);
- }
 }

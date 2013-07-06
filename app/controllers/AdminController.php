@@ -11,32 +11,73 @@ class AdminController extends BaseController{
  //全POSTにcsrfフィルターの適用
  $this->beforeFilter('csrf',array('on'=>'post'));
  }
+ 
+	private function column($id){
+		$pro=Profile::find($id);
+		if(isset($pro)){
+			//指定ユーザー情報を取得
+			$pro=Profile::find($id)->tel;
+			$data['tel']=isset($pro) ? $pro : null;
+			$pro=Profile::find($id)->address;
+			$data['address']=isset($pro) ? unserialize($pro) : null;
+			$pro=Profile::find($id)->body;
+			$data['body']=isset($pro) ? unserialize($pro) : null;
+			$pro=Profile::find($id)->license;
+			$data['license']=isset($pro) ? unserialize($pro) : null;
+			$pro=Profile::find($id)->labor;
+			$data['labor']=isset($pro) ? unserialize($pro) : null;
+			$pro=Profile::find($id)->family;
+			$data['family']=isset($pro) ? unserialize($pro) : null;
+			$pro=Profile::find($id)->note;
+			$data['note']=isset($pro) ? unserialize($pro) : null;
+			$pro=Profile::find($id)->message;
+			$data['message']=isset($pro) ? unserialize($pro) : null;
+			$pro=Profile::find($id)->todo;
+			$data['todo']=isset($pro) ? unserialize($pro) : null;
+		
+			return $data;
+		}
+		return null;
+	}
 /*
 |------------------------------------
 | TOPページ
 |------------------------------------
 */
- public function getIndex(){
+ public function getIndex($action=null,$id=null){
 	 return View::make('admin/index');
  }
 /*
 |------------------------------------
-| ユーザー一覧ページ
+| ユーザー操作
 |------------------------------------
-| 1. getで全ユーザー表示
-| 2. postでユーザー検索
 */
-//全ユーザー表示
- public function getUser(){
-	 $data['users']=User::paginate(10);
-	 return View::make('admin/user/index',$data);
- }
- //検索ユーザー表示
- public function postUser(){
-	 $inputs=Input::get('search');
-	 $data['users']=User::where('name','LIKE','%'.$inputs.'%')->paginate(10);
-	 return View::make('admin/user/index',$data);
- }
+	//ユーザー表示
+	public function getUser($action=null,$id=null){
+		//viewの表示
+		if($action == 'view' and $id != null){
+			//オブジェクトをセット
+			$data['user']=User::find($id);
+			//配列をセット
+			$data['profile']=$this->column($id);
+			//return var_dump($data['profile']);
+			return View::make('admin/user/view',$data);
+		}elseif($id != null){
+			//$idがNULLなら全ユーザー表示
+			$data['user']=User::find($id);
+			return View::make('admin/user/index',$data);
+		}
+		//indexビューの表示
+			$data['users']=User::paginate(20);
+			return View::make('admin/user/index',$data);
+	}
+	//ユーザーのデータ処理
+	public function postUser($action=null,$id=null){
+		$inputs=Input::get('search');
+		$data['users']=User::where('name','LIKE','%'.$inputs.'%')->paginate(10);
+		
+		return View::make('admin/user/index',$data);
+	}
 /*
 |-----------------------------------
 | ユーザー新規作成
@@ -59,6 +100,7 @@ class AdminController extends BaseController{
  //バリデーションの指定
  $rules=array(
  'name'=>'required',
+ 'tel'=>'required',
  'email'=>'required|email|unique:users',
  'password'=>'required|min:4',
  );
@@ -70,12 +112,25 @@ class AdminController extends BaseController{
  ->withErrors($val)
  ->withInput();
  }
- //ユーザーの新規作成
  $inputs['onepass']=md5(Input::get('name').time());
- //新規作成
- $user=User::create($inputs);
+ 
+ /*******************************
+  *  新規作成
+	*******************************/
+	
+	//ユーザーの作成
+	$user=User::create($inputs);
+	
+	$profile['user_id']=$user->id;
+	//profileの作成
+	$pro=Profile::create($profile);
+	$user->profile_id=$pro->id;
+	$user->save();
+	$labor['user_id']=$user->id;
+	//laborの作成
+	Labor::create($labor);
 	//コントローラアクションへパラメーターを渡し、リダレクト
-	return Redirect::action('AdminController@getView',array('id'=>$user->id));
+	return Redirect::to('admin/user');
  }
 /*
 |------------------------------------
@@ -129,8 +184,7 @@ class AdminController extends BaseController{
 		$user->save();
 		$data['users']=$user;
 		//コントローラアクションへ名前付きパラメーターを渡し、リダレクト
-		//return Redirect::action('AdminController@getUpdate',array('id'=>$id))
-		return Redirect::back()
+		return Redirect::to('admin/user')
 		->with('warning','データを更新しました');
 	}
 /*
@@ -231,5 +285,47 @@ class AdminController extends BaseController{
 */
 	public function getGroupUpdate(){
 		return View::make('admin/group/update');
+	}
+/*
+|------------------------------------
+| Userのプロフィール操作
+|------------------------------------
+*/
+	private function col($col='null',$id){
+		//指定ユーザー情報を取得
+		$pro=Profile::find($id);
+		if($pro->$col != null){
+			//アンシリアライズして、配列データを返します。
+			$data=unserialize($pro->$col);
+			return $data;
+		}else{
+			return null;
+		}
+	}
+
+	public function getProfile($action=null,$id=null){
+		//viewページへ
+		if($action == 'view' and $id != null){
+			$data['name']=Profile::find($id)->user->name;
+			$data['tel']=Profile::find($id)->tel;
+			$data['address']=$this->col('address',$id);
+			$data['body']=$this->col('body',$id);
+			$data['license']=$this->col('license',$id);
+			$data['labor']=$this->col('labor',$id);
+			$data['family']=$this->col('family',$id);
+			$data['note']=$this->col('note',$id);
+			$data['message']=$this->col('message',$id);
+			$data['todo']=$this->col('todo',$id);
+			$data['created_at']=Profile::find($id)->created_at;
+			$data['updated_at']=Profile::find($id)->updated_at;
+			//return var_dump($data['address']);
+			//viewページへ
+			return View::make('admin/profile/view',$data);
+		}elseif($action == 'update' and $id != null){
+			return 'update page!!';
+		}
+		//上記以外は全てindexページへ	
+		$data['profiles']=Profile::all($id);
+		return View::make('admin/profile/index',$data);
 	}
 }

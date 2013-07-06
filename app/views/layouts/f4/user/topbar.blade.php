@@ -3,8 +3,8 @@
 <ul class="title-area">
 <!-- Title Area -->
 <li class="name">
-<h1><a href="#">
-Builwing
+<h1><a href="/">
+{{ Auth::user()->name }}
 </a></h1>
 </li>
 <li class="toggle-topbar menu-icon"><a href="#"><span>menu</span></a></li>
@@ -12,6 +12,23 @@ Builwing
 <section class="top-bar-section">
 <!-- Right Nav Section -->
 <ul class="right">
+<li class="divider"></li>
+<li class="has-dropdown">
+	<a href="#">メッセージ</a>
+  <ul class="dropdown">
+  	<li>{{ HTML::link('message','メッセージ一覧') }}
+  	<li>{{ HTML::link('#','未読メッセージ') }}
+  	<li>{{ HTML::link('#','既読メッセージ') }}
+		<li class="has-dropdown">
+		<a href="#">メッセージ作成</a>
+  		<ul class="dropdown">
+  			<li>{{ HTML::link('message/create','普通メッセージ') }}
+  			<li>{{ HTML::link('message/create/user','個人指定ﾒｯｾｰｼﾞ') }}
+  			<li>{{ HTML::link('message/create/role','ロール指定ﾒｯｾｰｼﾞ') }}
+  		</ul>
+		</li>
+  </ul>
+</li>
 <li class="divider"></li>
 <li class="has-dropdown">
 {{ HTML::link('#','現場情報') }}
@@ -46,11 +63,16 @@ Builwing
 <li class="divider"></li>
 <li><a href="#">取引先情報</a></li>
 <li class="divider"></li>
-<li class="divider"></li>
-<li><a href="#">社員情報</a></li>
+<li class="has-dropdown">
+	<a href="#">社内情報</a>
+  <ul class="dropdown">
+  	<li>{{ HTML::link('message','メッセージ一覧') }}
+  	<li>{{ HTML::link('message/create','メッセージ作成') }}
+  </ul>
+</li>
 <li class="divider"></li>
 <li class="has-dropdown">
-<a href="#">{{ Auth::user()->name }}</a>
+<a href="#">{{ '個人情報' }}</a>
 <ul class="dropdown">
 <li class="has-dropdown">
 {{ HTML::link('#','プロフィール') }}

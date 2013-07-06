@@ -4,8 +4,8 @@
 <!-- Title Area -->
 <li class="name">
 <h1>
-<a href="#">
-Top Bar Title
+<a href="/">
+Builwing
 </a>
 </h1>
 </li>

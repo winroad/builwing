@@ -14,28 +14,24 @@
   <tr>
     <th scope="col">ユーザー名</th>
     <th scope="col">Eメール</th>
-    <th scope="col">処理</th>
+    <th scope="col">認証</th>
+    <th scope="col">Role</th>
+    <th scope="col">Group</th>
   </tr>
 </thead>
 @foreach($users as $user)
   <tr>
     <td>
 @if($user->deleted_at== null)
-    {{ HTML::linkAction('AdminController@getView',$user->name,
-    		array('id'=>$user->id)) }}
+    {{ HTML::link('admin/user/view/'.$user->id,$user->name) }}
 @else
     {{ $user->name }}
 @endif
     </td>
     <td>{{ $user->email }}</td>
-    <td>
-@if($user->deleted_at== null)
-    {{ HTML::linkAction('AdminController@getUpdate','修正',array('id'=>$user->id)) }}&nbsp;
-    {{ HTML::linkAction('AdminController@getDelete','削除',array('id'=>$user->id)) }}
-@else
-    {{ HTML::linkAction('AdminController@getRestore','復活',array('id'=>$user->id)) }}
-@endif    
-    </td>
+    <td>{{ $user->activate }}</td>
+    <td>{{ $user->role->name }}</td>
+    <td>{{ $user->group->name }}</td>
   </tr>
 @endforeach
 </table>

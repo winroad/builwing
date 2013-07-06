@@ -9,11 +9,6 @@
 AdminのViewページです
 </div>
 @endif
-<ul class="button-group">
- <li>{{ HTML::link('admin/user','一覧',array('class'=>'small button')) }}</li>
- <li>{{ HTML::linkAction('AdminController@getUpdate','修正',array('id'=>$user->id),array('class'=>'small button')) }}</li>
- <li><a href="#" class="small button">削除</a></li>
- </ul><!--end of button-group-->
 <table width="100%" border="1">
   <tr>
     <th scope="row">ID</th>
@@ -28,8 +23,12 @@ AdminのViewページです
     <td>{{ $user->email }}</td>
   </tr>
   <tr>
+    <th scope="row">電話番号</th>
+    <td>{{ isset($profile['tel']) ? $profile['tel']: null }}</td>
+  </tr>
+  <tr>
     <th scope="row">アクティベート</th>
-    <td>{{ $user->activate>0 ? '認証済み' :'未認証' }}</td>
+    <td>{{ $user->activate> 0 ? '認証済み' :'未認証' }}</td>
   </tr>
   <tr>
     <th scope="row">ロール（権限）</th>
@@ -48,14 +47,84 @@ AdminのViewページです
     <td>{{ $user->updated_at }}</td>
   </tr>
   <tr>
-    <th scope="row">プロフィール</th>
-    <td>&nbsp;</td>
+    <th scope="row">住所関連情報</th>
+    <td>
+    @if(isset($profile['address']))
+    @foreach($profile['address'] as $key=>$value)
+    {{ $key }} : {{ $value }}<br />
+    @endforeach
+    @endif
+    </td>
   </tr>
   <tr>
-    <th scope="row">&nbsp;</th>
-    <td>&nbsp;</td>
+    <th scope="row">身体関連情報</th>
+    <td>
+    @if(isset($profile['body']))
+    @foreach($profile['body'] as $key=>$value)
+    {{ $key }} : {{ $value }}<br />
+    @endforeach
+    @endif
+    </td>
+  </tr>
+  <tr>
+    <th scope="row">資格関連情報</th>
+    <td>
+    @if(isset($profile['license']))
+    @foreach($profile['license'] as $key=>$value)
+    {{ $key }} : {{ $value }}<br />
+    @endforeach
+    @endif
+    </td>
+  </tr>
+  <tr>
+    <th scope="row">労務関連情報</th>
+    <td>
+    @if(isset($profile['labor']))
+    @foreach($profile['labor'] as $key=>$value)
+    {{ $key }} : {{ $value }}<br />
+    @endforeach
+    @endif
+    </td>
+  </tr>
+  <tr>
+    <th scope="row">家族関連情報</th>
+    <td>
+    @if(isset($profile['family']))
+    @foreach($profile['family'] as $key=>$value)
+    {{ $key }} : {{ $value }}<br />
+    @endforeach
+    @endif
+    </td>
+  </tr>
+  <tr>
+    <th scope="row">備考</th>
+    <td>
+    @if(isset($profile['note']))
+    @foreach($profile['note'] as $key=>$value)
+    {{ $key }} : {{ $value }}<br />
+    @endforeach
+    @endif
+    </td>
+  </tr>
+  <tr>
+    <th scope="row">未読メッセージ</th>
+    <td>
+    @if(isset($profile['message']))
+    @foreach($profile['message'] as $key=>$value)
+    {{ $key }} : {{ $value }}<br />
+    @endforeach
+    @endif
+    </td>
+  </tr>
+  <tr>
+    <th scope="row">未処理Todo</th>
+    <td>
+    @if(isset($profile['todo']))
+    @foreach($profile['todo'] as $key=>$value)
+    {{ $key }} : {{ $value }}<br />
+    @endforeach
+    @endif
+    </td>
   </tr>
 </table>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
 <p>@stop</p>

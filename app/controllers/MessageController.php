@@ -122,7 +122,7 @@ class MessageController extends BaseController{
 		//ログインユーザーのWorkオブジェクトを取得
 		$work=Work::where('user_id',Auth::user()->id)->first();
 		//未読メッセージがなければ
-		if($work->message == null){
+		if($work->message == null or unserialize($work->message) == null){
 			return '未読メッセージはありません';
 		}
 		//指定IDが未読メッセージの中にあれば
@@ -131,10 +131,13 @@ class MessageController extends BaseController{
 				//未読メッセージIDの配列を取得
 				$unread=unserialize($work->message);
 					//未読メッセージを削除
-					unset($unread[$key]);
+					array_pull($unread,$key);
+					//配列のキーを前に詰める
+					$unread=array_values($unread);
 				$message=serialize($unread);
 				$work->message=$message;
 				$work->save();
+				return Redirect::to('message/unread');
 		}
 		//未読メッセージの配列取得
 		$unread=isset($work) ? unserialize($work->message) : null;

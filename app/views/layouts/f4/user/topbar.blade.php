@@ -17,7 +17,7 @@
 	<a href="#">メッセージ</a>
   <ul class="dropdown">
   	<li>{{ HTML::link('message','メッセージ一覧') }}
-  	<li>{{ HTML::link('#','未読メッセージ') }}
+  	<li>{{ HTML::link('message/unread','未読メッセージ') }}
   	<li>{{ HTML::link('#','既読メッセージ') }}
 		<li class="has-dropdown">
 		<a href="#">メッセージ作成</a>

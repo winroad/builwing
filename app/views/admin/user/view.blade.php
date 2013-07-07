@@ -79,8 +79,8 @@ AdminのViewページです
   <tr>
     <th scope="row">労務関連情報</th>
     <td>
-    @if(isset($profile['labor']))
-    @foreach($profile['labor'] as $key=>$value)
+    @if(isset($profile['work']))
+    @foreach($profile['work'] as $key=>$value)
     {{ $key }} : {{ $value }}<br />
     @endforeach
     @endif

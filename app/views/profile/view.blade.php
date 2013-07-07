@@ -44,10 +44,10 @@
     </td>
   </tr>
   <tr>
-    <th scope="row">{{ HTML::link('profile/create/labor','労務情報') }}</th>
+    <th scope="row">{{ HTML::link('profile/create/work','労務情報') }}</th>
     <td>
-    @if($labor)
-    @foreach($labor as $key=>$value)
+    @if($work)
+    @foreach($work as $key=>$value)
     	{{ $key }} : {{ $value }}<br />
     @endforeach
     @endif

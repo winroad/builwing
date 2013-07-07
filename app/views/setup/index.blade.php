@@ -19,7 +19,7 @@
   <li>{{ HTML::link('setup/comments','commentsの作成') }}</li>
   <li>{{ HTML::link('setup/comment-post','comment_postの作成') }}</li>
   <li>{{ HTML::link('setup/untreated','untreated(未読用)の作成') }}</li>
-  <li>{{ HTML::link('setup/labors','労務管理(labor)の作成') }}</li>
+  <li>{{ HTML::link('setup/works','労務管理(work)の作成') }}</li>
   <li>{{ HTML::link('setup/todo','TODOの作成') }}</li>
   <li>{{ HTML::link('setup/messages','messagesの作成') }}</li>
   <li>一括作成

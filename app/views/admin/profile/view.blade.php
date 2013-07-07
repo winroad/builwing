@@ -43,8 +43,8 @@
   <tr>
     <th scope="row">労務情報</th>
     <td>
-    @if(isset($labor))
-    @foreach($labor as $key=>$value)
+    @if(isset($work))
+    @foreach($work as $key=>$value)
     {{ $key }} : {{ $value }}<br />
     @endforeach
     @endif

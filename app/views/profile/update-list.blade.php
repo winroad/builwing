@@ -29,11 +29,11 @@
   	</ul>
   </li>
   @endif
-  @if(isset($labor))
+  @if(isset($work))
   <li>労務情報
   	<ul>
-    @foreach($labor as $key=>$value)
-  		<li>{{ HTML::link('profile/update/labor/'.$key,$key) }} : {{ $value }}</li>
+    @foreach($work as $key=>$value)
+  		<li>{{ HTML::link('profile/update/work/'.$key,$key) }} : {{ $value }}</li>
     @endforeach
   	</ul>
   </li>

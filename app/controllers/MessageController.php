@@ -91,13 +91,11 @@ class MessageController extends BaseController{
 
 	/********************************
 	 * 未読処理
-	 * workテーブルのmessage項目に配列保存
+	 * worksテーブルのmessage項目に配列保存
 	 ********************************/
 		
 		//個人宛メッセージなら
 		if(isset($inputs['recipient_id'])){
-			//$old=array();
-			//$new=array();
 			//受信メッセージの整理
 			$work=Work::where('user_id',$inputs['recipient_id'])->first();
 			//旧メッセージ
@@ -106,12 +104,30 @@ class MessageController extends BaseController{
 			$new=array($message->id);
 			//配列の併合
 			$merge=isset($old) ? array_merge($old,$new) : $new;
-			//登録データの整理
+			//登録データの保存
 			$work->message=serialize($merge);
 			$work->save();
+		//ロール宛てメッセージなら
+		}else{
+			//新メッセージ
+			$new=array($message->id);
+			//指定ロール以上のユーザーを取得
+			$users=User::where('role_id','<=',$inputs['role_id'])->get();
+			//ユーザーの数だけ繰り返し
+			foreach($users as $user):
+				//旧メッセージの取得
+				$work=Work::where('user_id',$user->id)->first();
+				$old=isset($work->message) ? unserialize($work->message) : array();
+				//配列の併合
+				$merge=isset($old) ? array_merge($old,$new) : $new;
+				//return var_dump($merge);
+				//登録データの保存
+				$work->message=serialize($merge);
+				$work->save();
+			endforeach;
 		}
 	//トップページへ移動
-	return Redirect::to('message/unread');
+	return Redirect::to('message/index');
 	}
 /*
 |------------------------------------
@@ -137,7 +153,8 @@ class MessageController extends BaseController{
 				$message=serialize($unread);
 				$work->message=$message;
 				$work->save();
-				return Redirect::to('message/unread');
+				//削除後に明細ページへ移動
+				return Redirect::to('message/view/'.$id);
 		}
 		//未読メッセージの配列取得
 		$unread=isset($work) ? unserialize($work->message) : null;
@@ -149,4 +166,13 @@ class MessageController extends BaseController{
 		//return var_dump($data['message']);
 		return View::make('message/unread',$data);
 	}
+/*
+|------------------------------------
+| 明細ページ
+|------------------------------------
+*/
+ public function getView($id=null){
+	 $data['message']=Message::find($id);
+	 return View::make('message/view',$data);
+ }
 }

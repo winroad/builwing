@@ -24,8 +24,8 @@ class AdminController extends BaseController{
 			$data['body']=isset($pro) ? unserialize($pro) : null;
 			$pro=Profile::find($id)->license;
 			$data['license']=isset($pro) ? unserialize($pro) : null;
-			$pro=Profile::find($id)->labor;
-			$data['labor']=isset($pro) ? unserialize($pro) : null;
+			$pro=Profile::find($id)->work;
+			$data['work']=isset($pro) ? unserialize($pro) : null;
 			$pro=Profile::find($id)->family;
 			$data['family']=isset($pro) ? unserialize($pro) : null;
 			$pro=Profile::find($id)->note;
@@ -100,7 +100,6 @@ class AdminController extends BaseController{
  //バリデーションの指定
  $rules=array(
  'name'=>'required',
- 'tel'=>'required',
  'email'=>'required|email|unique:users',
  'password'=>'required|min:4',
  );
@@ -112,6 +111,7 @@ class AdminController extends BaseController{
  ->withErrors($val)
  ->withInput();
  }
+ 
  $inputs['onepass']=md5(Input::get('name').time());
  
  /*******************************
@@ -126,9 +126,9 @@ class AdminController extends BaseController{
 	$pro=Profile::create($profile);
 	$user->profile_id=$pro->id;
 	$user->save();
-	$labor['user_id']=$user->id;
-	//laborの作成
-	Labor::create($labor);
+	$work['user_id']=$user->id;
+	//workの作成
+	Work::create($work);
 	//コントローラアクションへパラメーターを渡し、リダレクト
 	return Redirect::to('admin/user');
  }
@@ -311,7 +311,7 @@ class AdminController extends BaseController{
 			$data['address']=$this->col('address',$id);
 			$data['body']=$this->col('body',$id);
 			$data['license']=$this->col('license',$id);
-			$data['labor']=$this->col('labor',$id);
+			$data['work']=$this->col('work',$id);
 			$data['family']=$this->col('family',$id);
 			$data['note']=$this->col('note',$id);
 			$data['message']=$this->col('message',$id);

@@ -13,12 +13,12 @@ class UserController extends BaseController{
  $this->beforeFilter('csrf',array('on'=>'post'));
  }
  
- private function labor(){
-	 $labor=Labor::where('user_id',Auth::user()->id)->get();
-	 if(count($labor) == 0){
+ private function work(){
+	 $work=Work::where('user_id',Auth::user()->id)->get();
+	 if(count($work) == 0){
 		 return '0です';
 	 }else{
-		 return count($labor).'件のメッセージがあります。';
+		 return count($work).'件のメッセージがあります。';
 	 }
  }
 /*
@@ -27,7 +27,7 @@ class UserController extends BaseController{
 |------------------------------------
 */
  public function getIndex(){
-	 //return $this->labor();
+	 //return $this->work();
 	 
 	 return View::make('user/index');
  }
@@ -104,10 +104,11 @@ class UserController extends BaseController{
  }
  public function postLogin(){
  //受信データの整理
- $inputs=Input::only('email','password');
+ $inputs=Input::only('name','password');
  //バリデーションの指定
  $rules=array(
- 'email'=>'required|email',
+ //'name'=>'required',
+ //'email'=>'required|email',
  'password'=>'required|min:4',
  );
  //バリデーションチェック

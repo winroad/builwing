@@ -99,7 +99,7 @@ class ProfileController extends BaseController{
 		$data['address']=Profile::item('address');
 		$data['body']=Profile::item('body');
 		$data['license']=Profile::item('license');
-		$data['labor']=Profile::item('labor');
+		$data['work']=Profile::item('work');
 		$data['family']=Profile::item('family');
 		//プロフィール数が0で無ければ
 		if(isset($data['profile'])){
@@ -118,7 +118,7 @@ class ProfileController extends BaseController{
 		$data['address']=Profile::item('address');
 		$data['body']=Profile::item('body');
 		$data['license']=Profile::item('license');
-		$data['labor']=Profile::item('labor');
+		$data['work']=Profile::item('work');
 		$data['family']=Profile::item('family');
 		$data['note']=Profile::item('note');
 		return View::make('profile/update-list',$data);

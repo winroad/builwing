@@ -26,7 +26,7 @@ public function getUsers(){
 		//プロフィールID
  		$table->integer('profile_id')->nullable();
 		//労務管理ID
- 		$table->integer('labor_id')->nullable();
+ 		$table->integer('work_id')->nullable();
  		//created_atとupdated_atの同時作成
  		$table->timestamps();
 		//deleted_atカラムを追加
@@ -70,7 +70,7 @@ public function getProfiles(){
 		//資格関連情報(シリアライズ)
  		$table->text('license')->nullable();
 		//労務関連情報(シリアライズ)
- 		$table->text('labor')->nullable();
+ 		$table->text('work')->nullable();
 		//家族関連情報(シリアライズ)
  		$table->text('family')->nullable();
 		//その他(シリアライズ)
@@ -451,15 +451,15 @@ public function getBelongs(){
 	
 /*
 |---------------------------------------------
-|	labors(労務管理）テーブルの作成
+|	works(労務管理）テーブルの作成
 |---------------------------------------------
 */
-	public function getLabors(){
- 	if(Schema::hasTable('labors')){
-		$data['warning']='laborsテーブルが存在しますので、処理を中止します。';
+	public function getWorks(){
+ 	if(Schema::hasTable('works')){
+		$data['warning']='worksテーブルが存在しますので、処理を中止します。';
 		return View::make('setup/index',$data);
 	}
- 	Schema::create('labors',function($table){
+ 	Schema::create('works',function($table){
  		$table->increments('id');
 		//ユーザーID
 		$table->integer('user_id');
@@ -472,7 +472,7 @@ public function getBelongs(){
 		//ソフトデリート用
 		$table->softDeletes();	
  	});
-		$data['warning']='laborsテーブルを作成しました。';
+		$data['warning']='worksテーブルを作成しました。';
 		return View::make('setup/index',$data);
 	}
 	
@@ -609,7 +609,7 @@ public function getAll(){
 		//資格関連情報(シリアライズ)
  		$table->text('license')->nullable();
 		//労務関連情報(シリアライズ)
- 		$table->text('labor')->nullable();
+ 		$table->text('work')->nullable();
 		//家族関連情報(シリアライズ)
  		$table->text('family')->nullable();
 		//その他(シリアライズ)

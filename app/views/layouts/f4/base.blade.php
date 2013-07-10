@@ -38,7 +38,25 @@
 <hr>
 {{ View::make('layouts.f4.footer') }}
 @show
- 
+<script>
+<!--//
+t_speed=5;//点滅スピード
+		my_cnt=0;
+		
+	function tenmetu(){
+		obj = document.all("t1");
+		if(my_cnt==0)
+				{
+				obj.style.visibility = "visible";
+				my_cnt=1;		
+				}else{
+				obj.style.visibility = "hidden";
+				my_cnt=0;
+				}
+				setTimeout("tenmetu()", t_speed*100);			
+				}
+//-->
+</script>
 <script>
 document.write('<script src="http://bw.winroad.jp/f4/js/vendor/'
         + ('__proto__' in {} ? 'zepto' : 'jquery')

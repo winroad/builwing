@@ -69,17 +69,17 @@ protected $guarded=array('id');
 | リレーションの指定
 |--------------------------------------------
 */
-public function role(){
-return $this->belongsTo('Role');
-}
 public function group(){
 return $this->belongsTo('Group');
 }
 public function profile(){
-return $this->hasOne('Profile');
+return $this->hasOne('Profile','id');
 }
 public function work(){
-return $this->hasOne('Work');
+return $this->hasOne('Work','id');
+}
+public function messages(){
+return $this->hasMany('Message');
 }
 /*
 |--------------------------------------------

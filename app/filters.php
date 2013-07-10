@@ -46,9 +46,9 @@ Route::filter('admin', function(){
 	//ログインしていなければ、ログインページへ
 	if(Auth::guest()) return Redirect::guest('user/login');
 	//ログインしていてもAdminで無ければ、Userページへ
-	if(Auth::user()->role_id<>1){
-		return Redirect::intended('user');
-	}
+	//if(Auth::user()->group_id<>1){
+		//return Redirect::intended('user');
+	//}
 });
 
 

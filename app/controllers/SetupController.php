@@ -16,31 +16,36 @@ public function getUsers(){
  		$table->increments('id');
 		$table->string('name',32);
  		$table->string('email',100);
- 		$table->string('password',64);
- 		$table->string('onepass');
- 		$table->tinyinteger('activate')->default(0);
+ 		$table->string('password',100);
+ 		$table->text('permissions')->nullable();
+ 		$table->tinyinteger('activated')->default(0);
+ 		$table->string('activation_code')->nullable();
+ 		$table->string('activated_at')->nullable();
+ 		$table->string('last_login')->nullable();
+ 		$table->string('persist_code')->nullable();
+ 		$table->string('reset_password_code')->nullable();
+ 		$table->string('first_name')->nullable();
+ 		$table->string('last_name')->nullable;
+ 		//$table->tinyinteger('activate')->default(0);
 		//権限管理ID
- 		$table->integer('role_id')->nullable();
+ 		//$table->integer('group_id')->nullable();
 		//グループ管理ID
- 		$table->integer('group_id')->nullable();
+ 		//$table->integer('group_id')->nullable();
 		//プロフィールID
- 		$table->integer('profile_id')->nullable();
+ 		//$table->integer('profile_id')->nullable();
 		//労務管理ID
- 		$table->integer('work_id')->nullable();
+ 		//$table->integer('work_id')->nullable();
  		//created_atとupdated_atの同時作成
  		$table->timestamps();
 		//deleted_atカラムを追加
-		$table->timestamp('deleted_at')->nullable();
+		$table->softDeletes();
  	});
 	//初期Adminの作成
 	User::create(array(
 			'name'=>'Admin',
 			'email'=>'admin@winroad.jp',
 			'password'=>'admin',
-			'onepass'=>md5('admin'.time()),
-			'activate'=>1,
-			'role_id'=>1,
-			'group_id'=>1,
+			'activated'=>1,
 			));
 		$data['warning']='usersテーブルを作成しました。';
 		return View::make('setup/index',$data);
@@ -76,9 +81,9 @@ public function getProfiles(){
 		//その他(シリアライズ)
  		$table->text('note')->nullable();
 		//メッセージ(シリアライズ)......未読メッセージ用
- 		$table->text('message')->nullable();
+ 		//$table->text('message')->nullable();
 		//TODO(シリアライズ)......未処理TODO用
- 		$table->text('todo')->nullable();
+ 		//$table->text('todo')->nullable();
  		//created_atとupdated_atの同時作成
  		$table->timestamps();
 		//deleted_atカラムを追加
@@ -91,7 +96,7 @@ public function getProfiles(){
 |---------------------------------------------
 |	rolesテーブルの作成
 |---------------------------------------------
-*/
+*
 public function getRoles(){
 	//rolesテーブルの存在確認
  	if(Schema::hasTable('roles')){
@@ -114,20 +119,36 @@ public function getRoles(){
 			'level'=>100,
 			));
 	Role::create(array(
-			'name'=>'Manager',
+			'name'=>'Director',
 			'level'=>90,
 			));
 	Role::create(array(
-			'name'=>'Moderator',
+			'name'=>'General Manager',
 			'level'=>80,
+			));
+	Role::create(array(
+			'name'=>'Manager',
+			'level'=>70,
+			));
+	Role::create(array(
+			'name'=>'Chief',
+			'level'=>60,
 			));
 	Role::create(array(
 			'name'=>'Staff',
 			'level'=>50,
 			));
 	Role::create(array(
+			'name'=>'Member',
+			'level'=>40,
+			));
+	Role::create(array(
 			'name'=>'Outsourcing',
 			'level'=>30,
+			));
+	Role::create(array(
+			'name'=>'Super User',
+			'level'=>20,
 			));
 	Role::create(array(
 			'name'=>'User',
@@ -155,22 +176,60 @@ public function getGroups(){
  	Schema::create('groups',function($table){
  		$table->increments('id');
 		//グループ略称
-		$table->string('abbreviation',100);
+		//$table->string('abbreviation',100);
 		//グループ名(会社名・所属先)
 		$table->string('name',100);
- 		$table->integer('level')->nullable();
+ 		$table->text('permissions')->nullable();
  		//created_atとupdated_atの同時作成
  		$table->timestamps();
-		//deleted_atカラムを追加
-		$table->timestamp('deleted_at')->nullable();		
+		//ソフトデリート用
+		$table->softDeletes();		
  	});
-	//新規Groupの作成
-	Group::create(array(
-			'abbreviation'=>'Builwing',
-			'name'=>'株式会社ビルウイング',
-			'level'=>100,
-			));
 		$data['warning']='groupsテーブルを作成しました。';
+		return View::make('setup/index',$data);
+	}
+/*
+|---------------------------------------------
+|	group_userテーブルの作成
+|---------------------------------------------
+*/
+public function getGroupUser(){
+	//groupsテーブルの存在確認
+ 	if(Schema::hasTable('users_groups')){
+		$data['warning']='users_groupsテーブルが存在しますので、処理を中止します。';
+		return View::make('setup/index',$data);
+	}
+ 	Schema::create('users_groups',function($table){
+ 		$table->integer('user_id');
+ 		$table->integer('group_id');
+	});
+		$data['warning']='users_groupsテーブルを作成しました。';
+		return View::make('setup/index',$data);
+	}
+/*
+|---------------------------------------------
+|	throttleテーブルの作成
+|---------------------------------------------
+*/
+public function getThrottle(){
+	//groupsテーブルの存在確認
+ 	if(Schema::hasTable('throttle')){
+		$data['warning']='throttleテーブルが存在しますので、処理を中止します。';
+		return View::make('setup/index',$data);
+	}
+	//throttleテーブルの作成
+ 	Schema::create('throttle',function($table){
+ 		$table->increments('id');
+		$table->integer('user_id');
+		$table->string('ip_address')->nullable();
+		//グループ略称
+		$table->integer('attempts')->default(0);
+		$table->tinyinteger('suspended')->default(0);
+		$table->tinyinteger('banned')->default(0);
+		$table->timestamp('last_attempt_at')->nullable();
+		$table->timestamp('suspendes_at')->nullable();
+ 	});
+		$data['warning']='throttleテーブルを作成しました。';
 		return View::make('setup/index',$data);
 	}
 /*
@@ -462,7 +521,7 @@ public function getBelongs(){
  	Schema::create('works',function($table){
  		$table->increments('id');
 		//ユーザーID
-		$table->integer('user_id');
+		//$table->integer('user_id');
 		//未読メッセージの配列（シリアライズ）
 		$table->text('message')->nullable();
 		//未処理TODOの配列（シリアライズ）
@@ -529,11 +588,13 @@ public function getBelongs(){
 		//受信者ID（個人宛ポストの場合）
 		$table->integer('recipient_id')->nullable();
 		//受信RoleID
-		$table->integer('role_id')->nullable();
+		$table->integer('group_id')->nullable();
 		//タイトル
 		$table->string('subject',200);
 		//メッセージ内容
 		$table->text('body');
+		//コメント
+		$table->text('comment')->nullable;
  		//created_atとupdated_atの同時作成
  		$table->timestamps();
 		//ソフトデリート用
@@ -690,7 +751,7 @@ public function getAll(){
 		$table->timestamp('deleted_at')->nullable();		
  	});
 	//新規Groupの作成
-	Group::create(array(
+	/*Group::create(array(
 			'abbreviation'=>'Builwing',
 			'name'=>'株式会社ビルウイング',
 			'level'=>100,

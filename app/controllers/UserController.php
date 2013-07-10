@@ -13,23 +13,34 @@ class UserController extends BaseController{
  $this->beforeFilter('csrf',array('on'=>'post'));
  }
  
- private function work(){
-	 $work=Work::where('user_id',Auth::user()->id)->get();
-	 if(count($work) == 0){
-		 return '0です';
+ private function unread(){
+	 $work=Work::find(Auth::user()->id);
+	 if(isset($work)){
+		 $unread=unserialize($work->message);
+		 return $unread;
 	 }else{
-		 return count($work).'件のメッセージがあります。';
+		 return null;
 	 }
  }
 /*
 |------------------------------------
-| TOPページ（authフィルターの適用）
+| TOPページ
 |------------------------------------
 */
  public function getIndex(){
-	 //return $this->work();
-	 
-	 return View::make('user/index');
+	 $data['unread']=$this->unread();
+	 $count=count($this->unread()).'件の未読メッセージがあります。';
+	 if($count != 0){
+	 $data['message']=Auth::user()->name.'さんに'.$count.'ここをクリックして確認してください。';
+	 }
+	 $comment=Work::find(Auth::user()->id)->pluck('comment');
+	 $comment_id=unserialize(isset($comment) ? $comment : null);
+	 $comment_count=count($comment_id);
+	 //return dd($comment_count);
+	 $data['comment']=Auth::user()->name.'さんに'.$comment_count.'件の新しいコメントがあります。ここをクリックして確認してください。';
+	 //return dd($data['message']);
+	 //return dd($data['midoku']);
+	 return View::make('user/index',$data);
  }
 /*
 |-----------------------------------
@@ -49,7 +60,7 @@ class UserController extends BaseController{
  $inputs=Input::only('name','email','password');
  //バリデーションの指定
  $rules=array(
- 'name'=>'required',
+ 'name'=>'required|unique:users',
  'email'=>'required|email|unique:users',
  'password'=>'required|min:4',
  );
@@ -75,7 +86,7 @@ class UserController extends BaseController{
  }
 /*
 |-----------------------------------------
-| アクティベート
+| アクティベート（authフィルターの除外）
 |-----------------------------------------
 */
  Public function getActivate($onepass=null){
@@ -96,7 +107,7 @@ class UserController extends BaseController{
  }
  /*
 |-----------------------------------------
-| ログイン
+| ログイン（authフィルターの除外）
 |-----------------------------------------
 */
  public function getLogin(){
@@ -120,7 +131,7 @@ class UserController extends BaseController{
  ->withInput();
  }
  //ログイン認証
- $inputs['activate']=1;
+ //$inputs['activate']=1;
  if(Auth::attempt($inputs)){
  	return Redirect::intended('/');
  }

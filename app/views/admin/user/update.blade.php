@@ -50,14 +50,6 @@
 </div>
 <div class="row">
   <div class="small-3 columns">
-  {{ Form::label('','ロール',array('class'=>'right')) }}
-  </div>
-  <div class="small-9 columns">
-    {{ Form::select('role_id',$roles,isset($user->role_id) ? $user->role->id :null) }}
-  </div>
-</div>
-<div class="row">
-  <div class="small-3 columns">
   {{ Form::label('','グループ',array('class'=>'right')) }}
   </div>
   <div class="small-9 columns">

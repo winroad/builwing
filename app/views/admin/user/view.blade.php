@@ -32,7 +32,7 @@ AdminのViewページです
   </tr>
   <tr>
     <th scope="row">ロール（権限）</th>
-    <td>{{ isset($user->role->name) ? $user->role->name :'' }}</td>
+    <td>{{ isset($user->group->name) ? $user->group->name :'' }}</td>
   </tr>
   <tr>
     <th scope="row">所属先</th>

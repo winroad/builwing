@@ -65,7 +65,7 @@ class ProfileController extends BaseController{
 		}
 		$column=Input::get('column');
 		//データの新規作成
-		$profile=Profile::where('user_id','=',Auth::user()->id)->first();
+		$profile=Profile::find(Auth::user()->id);
 		//カラム内がNULLなら
 		if($profile->$column == null){
 			//入力値の配列を保存
@@ -78,7 +78,7 @@ class ProfileController extends BaseController{
 		//2つの配列を併合して一つの配列へ
 		$merge=array_merge($a,$b);
 		//Proileを取得
-		$profile=Profile::where('user_id','=',Auth::user()->id)->first();
+		$profile=Profile::find(Auth::user()->id);
 		//シリアライズ処理した配列を入力
 		$profile->$column=serialize($merge);
 		//データ保存

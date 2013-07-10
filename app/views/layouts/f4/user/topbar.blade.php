@@ -3,9 +3,10 @@
 <ul class="title-area">
 <!-- Title Area -->
 <li class="name">
-<h1><a href="/">
-{{ Auth::user()->name }}
-</a></h1>
+<h1>
+<a href="/">
+{{ HTML::image('f4/img/builwing_logo01.gif') }}</a>
+</h1>
 </li>
 <li class="toggle-topbar menu-icon"><a href="#"><span>menu</span></a></li>
 </ul>
@@ -16,15 +17,15 @@
 <li class="has-dropdown">
 	<a href="#">メッセージ</a>
   <ul class="dropdown">
-  	<li>{{ HTML::link('message','メッセージ一覧') }}
   	<li>{{ HTML::link('message/unread','未読メッセージ') }}
-  	<li>{{ HTML::link('#','既読メッセージ') }}
+  	<li>{{ HTML::link('message/comment/unread','未読コメント') }}
+  	<li>{{ HTML::link('message','メッセージ一覧') }}
+  	<li>{{ HTML::link('message/create','メッセージ作成') }}
 		<li class="has-dropdown">
-		<a href="#">メッセージ作成</a>
+		<a href="#">指定メッセージ</a>
   		<ul class="dropdown">
-  			<li>{{ HTML::link('message/create','普通メッセージ') }}
-  			<li>{{ HTML::link('message/create/user','個人指定ﾒｯｾｰｼﾞ') }}
-  			<li>{{ HTML::link('message/create/role','ロール指定ﾒｯｾｰｼﾞ') }}
+  			<li>{{ HTML::link('message/create/user','個人宛てﾒｯｾｰｼﾞ') }}
+  			<li>{{ HTML::link('message/create/group','部署宛ﾒｯｾｰｼﾞ') }}
   		</ul>
 		</li>
   </ul>
@@ -33,9 +34,8 @@
 <li class="has-dropdown">
 {{ HTML::link('#','現場情報') }}
 <ul class="dropdown">
-<li><label>現場情報</label></li>
 <li class="has-dropdown">
-{{ HTML::link('#','Has Dropdown, Level 1') }}
+{{ HTML::link('#','現場情報') }}
 <ul class="dropdown">
 <li>{{ HTML::link('#','作業現場一覧') }}</li>
 <li>{{ HTML::link('#','Dropdown Options') }}</li>
@@ -49,17 +49,13 @@
 <li>{{ HTML::link('#','現場検索') }}</li>
 {{ Form::close() }}
 <li class="divider"></li>
-<li><label>予定情報</label></li>
-<li>{{ HTML::link('#','Dropdown Options') }}</li>
+<li>{{ HTML::link('#','予定情報') }}</li>
 <li>{{ HTML::link('#','Dropdown Options') }}</li>
 <li>{{ HTML::link('#','Dropdown Options') }}</li>
 <li class="divider"></li>
 <li>{{ HTML::link('#','See all &rarr;') }}</li>
 </ul>
 </li>
-<li class="divider"></li>
-<li><a href="#">予定情報</a></li>
-<li class="divider"></li>
 <li class="divider"></li>
 <li><a href="#">取引先情報</a></li>
 <li class="divider"></li>
@@ -72,7 +68,7 @@
 </li>
 <li class="divider"></li>
 <li class="has-dropdown">
-<a href="#">{{ '個人情報' }}</a>
+<a href="#">{{ Auth::user()->name }}</a>
 <ul class="dropdown">
 <li class="has-dropdown">
 {{ HTML::link('#','プロフィール') }}

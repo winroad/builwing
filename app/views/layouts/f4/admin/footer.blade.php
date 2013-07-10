@@ -23,7 +23,7 @@
         <div class="large-8 columns">
           <ul class="inline-list right">
             <li>{{ HTML::link('/','TOP') }}</li>
-            @if(Auth::user()->role_id==1)
+            @if(Auth::user()->group_id==1)
             <li>{{ HTML::link('admin','管理室') }}</li>
             @endif
             @if(Auth::check())

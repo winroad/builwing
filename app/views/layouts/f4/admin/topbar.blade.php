@@ -49,9 +49,9 @@
 	<li class="has-dropdown">
 		<a href="#">グループ管理</a>
 		<ul class="dropdown">
-			<li>{{ HTML::link('admin/group/index','登録グループ') }}</li>
+			<li>{{ HTML::link('group/index','登録グループ') }}</li>
 			<li>{{ HTML::link('#','削除グループ') }}</li>
-			<li>{{ HTML::link('admin/group-create','グループ作成') }}</li>
+			<li>{{ HTML::link('group/create','グループ作成') }}</li>
 			<li>{{ HTML::link('#','その他') }}</li>
 		</ul>
 	</li>

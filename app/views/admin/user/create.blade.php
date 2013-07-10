@@ -49,16 +49,8 @@
   {{ Form::label('','アクティベート',array('class'=>'right')) }}
   </div>
   <div class="small-9 columns">
-	{{ Form::radio('activate',1,true) }} 認証
- 	{{ Form::radio('activate',null) }}　拒否
-  </div>
-</div>
-<div class="row">
-  <div class="small-3 columns">
-  {{ Form::label('','ロール',array('class'=>'right')) }}
-  </div>
-  <div class="small-9 columns">
-    {{ Form::select('role_id',$roles,isset($user->role_id) ? $user->role->id :null) }}
+	{{ Form::radio('activated',1,true) }} 認証
+ 	{{ Form::radio('activated',null) }}　拒否
   </div>
 </div>
 <div class="row">

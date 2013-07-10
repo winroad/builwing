@@ -11,9 +11,11 @@
 |
 */
 
-Route::get('/', array('before'=>'auth',function(){
-	return View::make('hello');
-}));
+/*Route::get('/', array('before'=>'auth',function(){
+	return Redirect::to('user/index');
+}));*/
+
+Route::get('/','UserController@getIndex');
 
 Route::controller('setup','SetupController');
 Route::controller('user','UserController');
@@ -22,9 +24,16 @@ Route::controller('profile','ProfileController');
 Route::controller('category','CategoryController');
 Route::controller('item','ItemController');
 Route::controller('history','HistoryController');
-Route::controller('post','PostController');
 Route::controller('message','MessageController');
+Route::controller('comment','CommentController');
+Route::controller('group','GroupController');
+Route::controller('login','LoginController');
 
 View::composer('admin/*',function($view){
 	$view->with('count',User::count());
+});
+
+Route::get('sample',function(){
+    $user=Work::find(5)->user->name;
+    return var_dump($user);
 });

@@ -6,22 +6,11 @@
 </div>
 @else
 <div data-alert class="alert-box success">
-グループ新規作成
+グループ新規作成yo
 </div>
 @endif
 {{ Form::open() }}
 <fieldset>
-<div class="row">
-  <div class="small-3 columns">
-  {{ Form::label('','略称',array('class'=>'right')) }}
-  </div>
-  <div class="small-9 columns">
-{{ Form::text('abbreviation',Input::old('abbreviation',''),array('style'=>'ime-mode:inactive')) }}
-@if($errors->has('abbreviation'))
-<h4 style="color:red;text-align:center">{{ $errors->first('abbreviation') }}</h4>
-@endif
-  </div>
-</div>
 <div class="row">
   <div class="small-3 columns">
   {{ Form::label('','グループ名',array('class'=>'right')) }}
@@ -35,10 +24,21 @@
 </div>
 <div class="row">
   <div class="small-3 columns">
-  {{ Form::label('','レベル',array('class'=>'right')) }}
+  {{ Form::label('','permission',array('class'=>'right')) }}
   </div>
   <div class="small-9 columns">
-    {{ Form::text('level','',array('style'=>'ime-mode:inactive')) }}
+  	{{ Form::checkbox('permission1',1) }} Adminの全権限
+  	{{ Form::checkbox('permission2',2) }} AdminのView
+  	{{ Form::checkbox('permission3',3) }} Userの全権限
+		<select name="permission" size="10" multiple>
+		<option value="1">admin</option>
+		<option value="2" >user</option>
+		<option value="3">admin.view</option>
+		<option value="4">user.create</option>
+		<option value="5">user.delete</option>
+		<option value="6">user.view</option>
+		<option value="7">user.update</option>
+		</select>
   </div>
 </div>
 <div class="row">

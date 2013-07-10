@@ -14,11 +14,6 @@
 @section('topbar')  
 {{ View::make('layouts/f4/user/topbar') }}
 @show
-
-@section('header')
-{{ View::make('layouts.f4.header') }}
-@show
-
     <div class="row">
    <div class="large-9 push-3 columns">
 
@@ -55,7 +50,6 @@
 @section('footer')
 {{ View::make('layouts.f4.footer') }}
 @show
-
 
 <script>
 document.write('<script src="http://bw.winroad.jp/f4/js/vendor/'

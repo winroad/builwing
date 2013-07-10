@@ -1,14 +1,14 @@
 <?php
 class Profile extends Eloquent{
  	protected $softDelete=true;
- 	protected $guarded=array('id');
+ 	protected $guarded=array('deleted_at');
 /*
 |--------------------------------------------
 | リレーションの指定
 |--------------------------------------------
 */
 	public function user(){
-	return $this->hasOne('User');
+	return $this->hasOne('User','id');
 	}
 	
 	public function history(){

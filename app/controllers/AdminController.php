@@ -88,7 +88,7 @@ class AdminController extends BaseController{
  //GETの処理
  public function getCreate(){
 	 //ロール名リスト作成
-	 $data['roles']=Role::orderBy('id','desc')->lists('name','id');
+	 //$data['roles']=Role::orderBy('id','desc')->lists('name','id');
 	 //グループ名リスト作成
 	 $data['groups']=Group::lists('name','id');
  			return View::make('admin/user/create',$data);
@@ -96,7 +96,8 @@ class AdminController extends BaseController{
  //POSTの処理
  public function postCreate(){
  //受信データの整理
- $inputs=Input::all();
+ $inputs=Input::except('_token','group_id');
+ $group_id=Input::get('group_id');
  //バリデーションの指定
  $rules=array(
  'name'=>'required',
@@ -112,21 +113,39 @@ class AdminController extends BaseController{
  ->withInput();
  }
  
- $inputs['onepass']=md5(Input::get('name').time());
- 
  /*******************************
   *  新規作成
 	*******************************/
 	
-	//ユーザーの作成
-	$user=User::create($inputs);
-	
-	$profile['user_id']=$user->id;
+	try{
+ // ユーザーの作成
+ $user = Sentry::getUserProvider()->create($inputs);
+//グループIDを使用してグループを検索
+ $adminGroup = Sentry::getGroupProvider()->findById($group_id);
+// ユーザーにグループを割り当てる
+ $user->addGroup($adminGroup);
+}
+catch (Cartalyst\Sentry\Users\LoginRequiredException $e)
+{
+ echo 'ログインフィールドは必須です。';
+}
+catch (Cartalyst\Sentry\Users\PasswordRequiredException $e)
+{
+ echo 'パスワードフィールドは必須です。';
+}
+catch (Cartalyst\Sentry\Users\UserExistsException $e)
+{
+ echo 'このログインユーザーは存在します。';
+}
+catch (Cartalyst\Sentry\Groups\GroupNotFoundException $e)
+{
+ echo 'グループは見つかりません。';
+}	
+	$profile['id']=$user->id;
 	//profileの作成
 	$pro=Profile::create($profile);
-	$user->profile_id=$pro->id;
 	$user->save();
-	$work['user_id']=$user->id;
+	$work['id']=$user->id;
 	//workの作成
 	Work::create($work);
 	//コントローラアクションへパラメーターを渡し、リダレクト

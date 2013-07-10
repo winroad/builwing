@@ -15,7 +15,6 @@
     <th scope="col">ユーザー名</th>
     <th scope="col">Eメール</th>
     <th scope="col">認証</th>
-    <th scope="col">Role</th>
     <th scope="col">Group</th>
   </tr>
 </thead>
@@ -30,8 +29,7 @@
     </td>
     <td>{{ $user->email }}</td>
     <td>{{ $user->activate }}</td>
-    <td>{{ $user->role->name }}</td>
-    <td>{{ $user->group->name }}</td>
+    <td>{{ Sentry::getUserProvider()->findById($user->id)->getGroups()->first()->name }}</td>
   </tr>
 @endforeach
 </table>

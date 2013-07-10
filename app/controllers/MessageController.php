@@ -12,43 +12,14 @@ class MessageController extends BaseController{
  $this->beforeFilter('csrf',array('on'=>'post'));
  }
  
-	//個人宛メッセージの取得
-	private function person(){
-		$message=Message::where('recipient_id','=',Auth::user()->id)
-	 		->orderBy('created_at','desc')
-			->paginate();
-		return $message;
-	}
-	//ロールの取得
-	private function role(){
-		$message=Message::where('role_id','>=',Auth::user()->role_id)
-	 		->orderBy('created_at','desc')
-			->paginate();
-		return $message;
-	}
-	//ログインユーザーのロール宛てメッセージの取得
-	private function owner(){
-		$message=Message::where('recipient_id','=',Auth::user()->id)
-			->orWhere('role_id','>=',Auth::user()->role_id)
-	 		->orderBy('created_at','desc')
-			->paginate();
-		if(isset($message)){
-			return $message;
-		}
-		return null;
-	}
-	//未読メッセージの取得
-	private function unread(){
-		$work=Work::where('user_id',Auth::user()->id);
-		return $work;
-	}
 /*
 |------------------------------------
 | TOPページ
 |------------------------------------
 */
 	public function getIndex(){
-		$data['messages']=$this->person();
+		//ログインユーザーの全メッセージを取得
+		$data['messages']=Message::own()->paginate();
 		return View::make('message/index',$data);
 	}	
 	
@@ -61,8 +32,8 @@ class MessageController extends BaseController{
 		if($recipient=='user'){
 			$data['user']=User::all()->lists('name','id');
 		}
-		if($recipient=='role'){
-			$data['role']=Role::all()->lists('name','id');
+		if($recipient=='group'){
+			$data['group']=Group::all()->lists('name','id');
 		}else{
 			$data['empty']='empty';
 		}
@@ -82,32 +53,35 @@ class MessageController extends BaseController{
 					->withInput()
 					->withErrors($val);
 		}
-		
-		if(!isset($inputs['role_id'])){
-			$inputs['role_id']=6;
-		}
+		//ロール指定が無ければ
+		//if(!isset($inputs['group_id'])){
+			//Staffを指定
+			//$inputs['group_id']=4;
+		//}
 		//データ登録
 		$message=Message::create($inputs);
 
-	/********************************
+	/*****************************************
 	 * 未読処理
 	 * worksテーブルのmessage項目に配列保存
-	 ********************************/
+	 *****************************************/
 		
 		//個人宛メッセージなら
 		if(isset($inputs['recipient_id'])){
 			//受信メッセージの整理
-			$work=Work::where('user_id',$inputs['recipient_id'])->first();
+			$work=Work::find($inputs['recipient_id']);
 			//旧メッセージ
 			$old=isset($work->message) ? unserialize($work->message) : array();
+			//return dd($old);
 			//新メッセージ
 			$new=array($message->id);
 			//配列の併合
 			$merge=isset($old) ? array_merge($old,$new) : $new;
 			//登録データの保存
+			//return dd($merge);
 			$work->message=serialize($merge);
 			$work->save();
-		//ロール宛てメッセージなら
+		/*グループ宛てメッセージなら
 		}else{
 			//新メッセージ
 			$new=array($message->id);
@@ -124,7 +98,7 @@ class MessageController extends BaseController{
 				//登録データの保存
 				$work->message=serialize($merge);
 				$work->save();
-			endforeach;
+			endforeach;*/
 		}
 	//トップページへ移動
 	return Redirect::to('message/index');
@@ -136,10 +110,11 @@ class MessageController extends BaseController{
 */
 	public function getUnread($id=null,$key=null){
 		//ログインユーザーのWorkオブジェクトを取得
-		$work=Work::where('user_id',Auth::user()->id)->first();
+		$work=Work::find(Auth::user()->id);
 		//未読メッセージがなければ
 		if($work->message == null or unserialize($work->message) == null){
-			return '未読メッセージはありません';
+			return View::make('message/unread')
+				->with('warning','　未読メッセージはありません');
 		}
 		//指定IDが未読メッセージの中にあれば
 		if(isset($id) and in_array($id,unserialize($work->message))){
@@ -158,12 +133,10 @@ class MessageController extends BaseController{
 		}
 		//未読メッセージの配列取得
 		$unread=isset($work) ? unserialize($work->message) : null;
-		//return var_dump($unread);
 		//配列の数だけオブジェクトを取得
 		foreach($unread as $key=>$value):
 			$data['message'][]=Message::find($value);
 		endforeach;
-		//return var_dump($data['message']);
 		return View::make('message/unread',$data);
 	}
 /*
@@ -172,7 +145,108 @@ class MessageController extends BaseController{
 |------------------------------------
 */
  public function getView($id=null){
-	 $data['message']=Message::find($id);
+	 $data['messages']=Message::find($id);
+	 //$com=isset($mes->comment) ? unserialize($mes->comment) : null;
+	 //return dd($com);
+	 //$data=array('message'=>$mes,'comment'=>$com);
 	 return View::make('message/view',$data);
  }
+/*
+|------------------------------------
+| コメントページ
+|------------------------------------
+*/
+	public function getComment($action=null,$id=null){
+		//コメント作成
+		if($action=='creaet'){
+			$data['action']=$action;
+			$data['key']=$id;
+		return View::make('message/comment/create',$data);
+		//未読コメントの表示
+		}elseif($action=='unread'){
+		//未読メッセージ
+				$data['action']=$action;
+				$unread=Work::find(Auth::user()->id)->pluck('comment');
+				//return dd($unread);
+				$data['action']=$action;
+				$data['comments']=isset($unread) ? unserialize($unread) :null;
+			return View::make('message/comment/unread',$data);
+			//未読コメントのチェック
+		}elseif($action=='check'){
+			$data['action']=$action;
+			$data['key']=$id;
+			//未読コメントの削除
+			return View::make('message/view/'.$id,$data);
+		}
+	}
+	
+	public function postComment($action=null,$id=null){
+		//return var_dump($id);
+		if($action = 'create'){
+			$inputs=Input::only('comment');
+			//return var_dump($inputs);
+			$rules=array('comment'=>'required');
+			$val=Validator::make($inputs,$rules);
+			if($val->fails()){
+				return Redirect::back()
+					->withInput()
+					->withErrors($val);
+			}
+			//新しいコメントを配列として取得
+			$new=(array($inputs['comment'].' ( '.Auth::user()->name.' より )'));
+			$message=Message::find($id);
+			//古いコメントを配列として取得
+			$old=isset($message->comment) ? unserialize($message->comment) : array();
+			//配列の併合
+			$merge=isset($old) ? array_merge($old,$new) : $new;
+			//コメントをシリアライズで保存
+			$message->comment=serialize($merge);
+			$message->save();
+			
+			/***************************************
+			 *  worksテーブルの未読コメントを登録
+			 ***************************************/
+			 //メッセージの受信者を取得
+			 if(isset($message->recipient_id)){
+				 $users=User::where('user_id',$message->recipient_id)->get();
+			 }else{
+				 $users=User::where('role_id','<=',$message->role_id)->get();
+			 }
+			 //return dd($users);
+			   foreach($users as $user):
+					$work=Work::where('user_id',$user->id)->first();
+				 	//新しいコメントのメッセージID
+					$new=(array($message->id));
+				   //古いコメントを配列として取得
+					$old=isset($work->comment) ? unserialize($work->comment) : array();
+					//return dd($old);
+					//配列の併合
+				  $merge=isset($old) ? array_merge($old,$new) : $new;
+					//return dd($merge);
+					//$work=Work::find($user_id);
+					//return dd($work->comment);
+					//コメントをシリアライズで保存
+					$work->comment=serialize($merge);
+					$work->save();
+				 endforeach;
+		}
+		//ログインユーザーの全メッセージを取得
+		$data['messages']=Message::own()->paginate();
+		return View::make('message/index',$data);
+	}	
+	
+/*
+|------------------------------------
+| メッセージ検索
+|------------------------------------
+*/
+	public function postSearch(){
+		$input=Input::get('search');
+		$data['messages']=Message::where('subject','LIKE','%'.$input.'%')
+			->orWhere('body','LIKE','%'.$input.'%')
+			->orWhere('comment','LIKE','%'.$input.'%')
+			->orderBy('created_at','desc')
+			->paginate();
+		return View::make('message/index',$data);
+	}
 }

@@ -13,11 +13,16 @@ class GroupController extends BaseController{
  }
  
  public function getIndex(){
-	 $data['groups']=Group::get();
+	 $data['groups']=Group::all();
+	 //return dd($data['groups']);
 	 return View::make('group/index',$data);
  }
  public function getCreate(){
-	 return View::make('group/create');
+	 $groups=Group::all();
+	 //return dd($groups);
+	 $data['groups']=DB::table('groups')->lists('name','id');
+	 //return dd($data['groups']);
+	 return View::make('group/create',$data);
  }
  public function postCreate(){
 	 $inputs=Input::except('_token','name');
@@ -34,7 +39,7 @@ class GroupController extends BaseController{
 			$data['permissions'][$input]=array_add(array($input),$input,1);
 			
 		}
-			$group=Sentry::getGroupProvider()->create($data);
+			$group=Group::create($data);
 	return Redirect::to('group/index');
 	}
 	 

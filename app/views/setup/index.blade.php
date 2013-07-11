@@ -71,9 +71,9 @@
     <td>{{ HTML::link('setup/comments','メッセージに対するコメント管理用テーブル') }}</td>
   </tr>
   <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
+    <td>13</td>
+    <td><p>comments</p></td>
+    <td>{{ HTML::link('setup/verify','Verify管理用4テーブル') }}</td>
   </tr>
   <tr>
     <td>&nbsp;</td>

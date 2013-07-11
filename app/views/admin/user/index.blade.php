@@ -15,7 +15,7 @@
     <th scope="col">ユーザー名</th>
     <th scope="col">Eメール</th>
     <th scope="col">認証</th>
-    <th scope="col">Group</th>
+    <th scope="col">Role</th>
   </tr>
 </thead>
 @foreach($users as $user)
@@ -28,8 +28,12 @@
 @endif
     </td>
     <td>{{ $user->email }}</td>
-    <td>{{ $user->activate }}</td>
-    <td>{{ Sentry::getUserProvider()->findById($user->id)->getGroups()->first()->name }}</td>
+    <td>{{ $user->verified }}</td>
+    <td>
+    @if(isset($user->roles->first()->name))
+    {{ $user->roles->first()->name }}
+    @endif
+    </td>
   </tr>
 @endforeach
 </table>

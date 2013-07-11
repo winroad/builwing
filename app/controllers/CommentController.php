@@ -40,10 +40,10 @@ class CommentController extends BaseController{
 	
 	/*****************************************
 	 * 未読処理
-	 * worksテーブルのmessage項目に配列保存
-	 *****************************************/
+	 * worksテーブルのcomment項目に配列保存
+	 *****************************************
 		
-		//個人宛メッセージなら
+		//個人宛メッセージのコメントなら
 		if(isset($message->recipient_id)){
 			//受信メッセージの整理
 			$work=Work::find($message->recipient_id);
@@ -60,28 +60,71 @@ class CommentController extends BaseController{
 			$work->comment=serialize($merge);
 			//return dd($work->comment);
 			$work->save();
-		//グループ宛てメッセージなら
+		//Role宛てメッセージなら
 		}else{
-			//新メッセージ
-			$new=array($message->id);
-			//指定グループのユーザーを取得
-			$users=Sentry::getUserProvider()->findAllInGroup('Admin');
-			return dd($users);
+			//新コメント
+			$new=array($comment->id);
+			//return dd(Input::all());
+			//指定Roleのユーザーを取得
+			$role=Role::find($message->role_id);
+			$users=User::find($role);
+			//return dd($users);
 			//ユーザーの数だけ繰り返し
 			foreach($users as $user):
 				//旧メッセージの取得
-				$work=Work::where('user_id',$user->id)->first();
-				$old=isset($work->message) ? unserialize($work->message) : array();
+				$work=Work::find($user->id);
+				//return dd($user->id);
+				$old=isset($work->comment) ? unserialize($work->comment) : array();
 				//配列の併合
 				$merge=isset($old) ? array_merge($old,$new) : $new;
 				//return var_dump($merge);
 				//登録データの保存
-				$work->message=serialize($merge);
+				$work->comment=serialize($merge);
 				$work->save();
 			endforeach;
 		}
 	//トップページへ移動
-	return Redirect::to('comment/index');
+	return Redirect::to('comment/index');*/
 	}
-	
+/*
+|------------------------------------
+| 未読コメント
+|------------------------------------
+*/
+	public function getUnread($id=null,$key=null){
+		//ログインユーザーのWorkオブジェクトを取得
+		$work=Work::find(Auth::user()->id);
+		//return dd($work->comment);
+		//未読コメントがなければ
+		if($work->comment == null or unserialize($work->comment) == null){
+			return View::make('comment/unread')
+				->with('warning','未読コメントはありません');
+		}
+		//指定IDが未読メッセージの中にあれば
+		if(isset($id) and in_array($id,unserialize($work->comment))){
+				//未読コメントIDの配列を取得
+				$unread=unserialize($work->comment);
+					//未読メッセージを削除
+					array_pull($unread,$key);
+					//配列のキーを前に詰める
+					$unread=array_values($unread);
+					//return dd($unread);
+				$comment=serialize($unread);
+				$work->comment=$comment;
+				$work->save();
+				$id=Comment::find($id)->message_id;
+				//return dd($id);
+				//削除後に明細ページへ移動
+				return Redirect::to('message/view/'.$id);
+		}
+		//未読コメントの配列取得
+		$unread=isset($work) ? unserialize($work->comment) : null;
+		//return dd($unread);
+		//配列の数だけオブジェクトを取得
+		foreach($unread as $key=>$value):
+			$data['comments'][]=Comment::find($value);
+			//return dd(Comment::find($value));
+		endforeach;
+		return View::make('comment/unread',$data);
+	}
 }

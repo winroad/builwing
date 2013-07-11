@@ -9,9 +9,8 @@ class Work extends Eloquent{
 	return $this->hasOne('User','id');
 	}
 	
-	public function scopeMycomment($query){
-		$query->where('user_id',Auth::user()->id)
-				->whereNotNull('comment');		
+	public function scopeOwn($query){
+		$query->find(Auth::user()->id);
 		return $query;
 	}
 }

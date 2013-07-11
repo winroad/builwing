@@ -28,12 +28,16 @@ Route::controller('message','MessageController');
 Route::controller('comment','CommentController');
 Route::controller('group','GroupController');
 Route::controller('login','LoginController');
+Route::controller('role','RoleController');
+Route::controller('permission','PermissionController');
+//Route::resource('admin','AdminController');
 
 View::composer('admin/*',function($view){
 	$view->with('count',User::count());
 });
 
 Route::get('sample',function(){
-    $user=Work::find(5)->user->name;
-    return var_dump($user);
+    $roles=Auth::user()->roles->first()->name;
+		 
+    return dd($roles);
 });

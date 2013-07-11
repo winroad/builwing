@@ -227,7 +227,7 @@ public function getThrottle(){
 		$table->tinyinteger('suspended')->default(0);
 		$table->tinyinteger('banned')->default(0);
 		$table->timestamp('last_attempt_at')->nullable();
-		$table->timestamp('suspendes_at')->nullable();
+		$table->timestamp('suspended_at')->nullable();
  	});
 		$data['warning']='throttleテーブルを作成しました。';
 		return View::make('setup/index',$data);
@@ -786,6 +786,112 @@ public function getAll(){
 		$table->timestamp('deleted_at')->nullable();		
  	});
 		$data['warning']='全users関連の一括作成が完了しました。';
+		return View::make('setup/index',$data);
+}
+
+/*|---------------------------------------------
+|	verify関連テーブルの作成
+|---------------------------------------------
+*/
+	//prmissionsテーブルの存在確認
+	public function getVerify(){
+ 	if(Schema::hasTable('permissions')){
+		$data['warning']='permissionsテーブルが存在しますので、処理を中止します。';
+		return View::make('setup/index',$data);
+	}
+		
+    Schema::create('permissions', function($table)
+    {
+            $table->engine = 'InnoDB';
+
+            $table->increments('id');
+            $table->string('name', 100)->index();
+            $table->string('description', 255)->nullable();
+            $table->timestamps();
+        });
+
+        // Create the roles table
+        Schema::create('roles', function($table)
+        {
+            $table->engine = 'InnoDB';
+
+            $table->increments('id');
+            $table->string('name', 100)->index();
+            $table->string('description', 255)->nullable();
+            $table->integer('level');
+            $table->softDeletes();
+            $table->timestamps();
+        });
+
+        // Create the users table
+        Schema::create('users', function($table)
+        {
+            $table->engine = 'InnoDB';
+
+            $table->increments('id');
+            $table->string('name', 30)->index();
+            $table->string('password', 60)->index();
+            $table->string('salt', 32);
+            $table->string('email', 255)->index();
+            $table->boolean('verified')->default(0);
+            $table->boolean('disabled')->default(0);
+            //$table->boolean('deleted')->default(0);
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        // Create the role/user relationship table
+        Schema::create('role_user', function($table)
+        {
+            $table->engine = 'InnoDB';
+
+            $table->integer('user_id')->unsigned()->index();
+            $table->integer('role_id')->unsigned()->index();
+            $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('role_id')->references('id')->on('roles');
+        });
+
+        // Create the permission/role relationship table
+        Schema::create('permission_role', function($table)
+        {
+            $table->engine = 'InnoDB';
+
+            $table->integer('permission_id')->unsigned()->index();
+            $table->integer('role_id')->unsigned()->index();
+            $table->timestamps();
+
+            $table->foreign('permission_id')->references('id')->on('permissions');
+            $table->foreign('role_id')->references('id')->on('roles');
+        });
+
+        $role_id = DB::table('roles')->insertGetId(array(
+            'name' => Config::get('verify::super_admin'),
+            'level' => 10,
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
+        ));
+
+        $user_id = DB::table('users')->insertGetId(array(
+            'name' => 'admin',
+            //'password' => Hash::make('admin'),
+            'password' => '$2a$08$rqN6idpy0FwezH72fQcdqunbJp7GJVm8j94atsTOqCeuNvc3PzH3m',
+            'salt' => 'a227383075861e775d0af6281ea05a49',
+            'email' => 'admin@example.com',
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
+            'verified' => 1,
+            'disabled' => 0,
+        ));
+
+        DB::table('role_user')->insert(array(
+            'role_id' => $role_id,
+            'user_id' => $user_id,
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
+        ));
+		$data['warning']='全Verify関連の一括作成が完了しました。';
 		return View::make('setup/index',$data);
 	}
 }

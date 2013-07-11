@@ -7,7 +7,8 @@ class AdminController extends BaseController{
 */
  public function __construct(){
  //adminフィルター
- $this->beforeFilter('admin');
+ //$this->beforeFilter('admin');
+ $this->beforeFilter('auth');
  //全POSTにcsrfフィルターの適用
  $this->beforeFilter('csrf',array('on'=>'post'));
  }
@@ -88,16 +89,14 @@ class AdminController extends BaseController{
  //GETの処理
  public function getCreate(){
 	 //ロール名リスト作成
-	 //$data['roles']=Role::orderBy('id','desc')->lists('name','id');
-	 //グループ名リスト作成
-	 $data['groups']=Group::lists('name','id');
+	 $data['roles']=Role::orderBy('level')->lists('name','id');
  			return View::make('admin/user/create',$data);
  }
  //POSTの処理
  public function postCreate(){
  //受信データの整理
- $inputs=Input::except('_token','group_id');
- $group_id=Input::get('group_id');
+ $inputs=Input::only('name','email','password','verified');
+ //return dd($inputs);
  //バリデーションの指定
  $rules=array(
  'name'=>'required',
@@ -112,42 +111,26 @@ class AdminController extends BaseController{
  ->withErrors($val)
  ->withInput();
  }
+ //return var_dump($inputs);
  
  /*******************************
   *  新規作成
 	*******************************/
-	
-	try{
- // ユーザーの作成
- $user = Sentry::getUserProvider()->create($inputs);
-//グループIDを使用してグループを検索
- $adminGroup = Sentry::getGroupProvider()->findById($group_id);
-// ユーザーにグループを割り当てる
- $user->addGroup($adminGroup);
-}
-catch (Cartalyst\Sentry\Users\LoginRequiredException $e)
-{
- echo 'ログインフィールドは必須です。';
-}
-catch (Cartalyst\Sentry\Users\PasswordRequiredException $e)
-{
- echo 'パスワードフィールドは必須です。';
-}
-catch (Cartalyst\Sentry\Users\UserExistsException $e)
-{
- echo 'このログインユーザーは存在します。';
-}
-catch (Cartalyst\Sentry\Groups\GroupNotFoundException $e)
-{
- echo 'グループは見つかりません。';
-}	
+	$role_id=Input::get('role_id');
+	//return dd($role_id);
+	$role_id=isset($role_id) ? $role_id : 8;
+	//return dd($role_id);
+	$user=User::create($inputs);
 	$profile['id']=$user->id;
 	//profileの作成
 	$pro=Profile::create($profile);
-	$user->save();
 	$work['id']=$user->id;
 	//workの作成
 	Work::create($work);
+	//ユーザーの作成
+	$user->save();
+	//ロールの作成
+	$user->roles()->sync(array($role_id));
 	//コントローラアクションへパラメーターを渡し、リダレクト
 	return Redirect::to('admin/user');
  }

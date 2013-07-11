@@ -5,7 +5,11 @@
 <li class="name">
 <h1>
 <a href="/">
+@if(Auth::user()->is('Super Admin'))
+SuperAdmin管理室
+@else
 Builwing
+@endif
 </a>
 </h1>
 </li>

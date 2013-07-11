@@ -39,12 +39,12 @@ App::after(function($request, $response)
 */
 
 Route::filter('auth', function(){
-	if (Auth::guest()) return Redirect::guest('user/login');
+	if (Auth::guest()) return Redirect::guest('login');
 });
 
 Route::filter('admin', function(){
 	//ログインしていなければ、ログインページへ
-	if(Auth::guest()) return Redirect::guest('user/login');
+	if(Auth::guest()) return Redirect::guest('login');
 	//ログインしていてもAdminで無ければ、Userページへ
 	//if(Auth::user()->group_id<>1){
 		//return Redirect::intended('user');

@@ -35,34 +35,10 @@ class LoginController extends BaseController{
  ->withInput();
  }
  //ログイン認証
- try{
-	$user = Sentry::authenticate($inputs, false);
-	 	return Redirect::intended('/');
-	}
-	catch (Cartalyst\Sentry\Users\LoginRequiredException $e)
-	{
-    	echo 'ログインフィールドは必須です。';
-	}
-	catch (Cartalyst\Sentry\Users\PasswordRequiredException $e)
-	{
-    	echo 'パスワードフィールドは必須です。';
-	}
-	catch (Cartalyst\Sentry\Users\UserNotFoundException $e)
-	{
-    echo 'ユーザーが見つかりませんでした。';
-	}
-	catch (Cartalyst\Sentry\Users\UserNotActivatedException $e)
-	{
-    	echo 'ユーザーはアクティベートされていません。';
-	} 
-	catch (Cartalyst\Sentry\Throttling\UserSuspendedException $e)
-	{
-   	 echo 'ユーザー権限が停止されています。';
-	}
-	catch (Cartalyst\Sentry\Throttling\UserBannedException $e)
-	{
-    	echo '禁止ユーザーです。';
-	}	 
+ if(Auth::attempt($inputs)){
+ 	return Redirect::intended('/');
+ }
+	 return 'ログインできません';
  
  }
 /*
@@ -74,8 +50,8 @@ class LoginController extends BaseController{
 */
  //GETの処理
  public function getCreate(){
-	 //グループ名リスト作成
-	 $data['groups']=Group::lists('name','id');
+	 //Role名リスト作成
+	 $data['roles']=Role::lists('name','id');
  			return View::make('login/create',$data);
  }
  //POSTの処理
@@ -83,7 +59,7 @@ class LoginController extends BaseController{
  //受信データの整理
  $inputs=Input::except('_token','group_id');
  //return dd(Input::all());
- $group_id=Input::get('group_id');
+ $role_id=Input::get('role_id');
  //return dd($inputs);
  //バリデーションの指定
  $rules=array(
@@ -104,30 +80,8 @@ class LoginController extends BaseController{
   *  新規作成
 	*******************************/
 	
-	try{
- // ユーザーの作成
- $user = Sentry::getUserProvider()->create($inputs);
-//グループIDを使用してグループを検索
- $adminGroup = Sentry::getGroupProvider()->findById($group_id);
-// ユーザーにグループを割り当てる
- $user->addGroup($adminGroup);
-}
-catch (Cartalyst\Sentry\Users\LoginRequiredException $e)
-{
- echo 'ログインフィールドは必須です。';
-}
-catch (Cartalyst\Sentry\Users\PasswordRequiredException $e)
-{
- echo 'パスワードフィールドは必須です。';
-}
-catch (Cartalyst\Sentry\Users\UserExistsException $e)
-{
- echo 'このログインユーザーは存在します。';
-}
-catch (Cartalyst\Sentry\Groups\GroupNotFoundException $e)
-{
- echo 'グループは見つかりません。';
-}	
+	$user=User::create($inputs);
+	
 	$profile['id']=$user->id;
 	//profileの作成
 	$pro=Profile::create($profile);

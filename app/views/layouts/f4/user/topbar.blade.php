@@ -18,14 +18,14 @@
 	<a href="#">メッセージ</a>
   <ul class="dropdown">
   	<li>{{ HTML::link('message/unread','未読メッセージ') }}
-  	<li>{{ HTML::link('message/comment/unread','未読コメント') }}
+  	<li>{{ HTML::link('comment/unread','未読コメント') }}
   	<li>{{ HTML::link('message','メッセージ一覧') }}
   	<li>{{ HTML::link('message/create','メッセージ作成') }}
 		<li class="has-dropdown">
 		<a href="#">指定メッセージ</a>
   		<ul class="dropdown">
   			<li>{{ HTML::link('message/create/user','個人宛てﾒｯｾｰｼﾞ') }}
-  			<li>{{ HTML::link('message/create/group','部署宛ﾒｯｾｰｼﾞ') }}
+  			<li>{{ HTML::link('message/create/role','部署宛ﾒｯｾｰｼﾞ') }}
   		</ul>
 		</li>
   </ul>
@@ -80,7 +80,7 @@
 <li>{{ HTML::link('#','設定変更') }}</li>
 <li>{{ HTML::link('history/index','修正履歴') }}</li>
 <li class="divider"></li>
-<li>{{ HTML::link('user/logout','ログアウト') }}</li>
+<li>{{ HTML::link('login/logout','ログアウト') }}</li>
 </ul>
 </li>
 </ul>

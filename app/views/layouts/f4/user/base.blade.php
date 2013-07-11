@@ -31,8 +31,8 @@
     
   </div>
   
-@section('sidemenu')
-{{ View::make('layouts.f4.sidemenu') }}
+@section('sidebar')
+{{ View::make('layouts.f4.user.sidebar') }}
 @show
 
 <p><a href="http://foundation.zurb.com/download.php" class="button expand" style="margin-bottom: 0;">Download Foundation 4</a></p>
@@ -48,7 +48,7 @@
 
 
 @section('footer')
-{{ View::make('layouts.f4.footer') }}
+{{ View::make('layouts.f4.user.footer') }}
 @show
 
 <script>

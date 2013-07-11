@@ -6,66 +6,31 @@
 </div>
 @else
 <div data-alert class="alert-box success">
-ユーザー新規作成
+グループ新規作成
 </div>
 @endif
 {{ Form::open() }}
 <fieldset>
-<div class="row">
-  <div class="small-3 columns">
-  {{ Form::label('','氏名',array('class'=>'right')) }}
-  </div>
-  <div class="small-9 columns">
+<div class="panel">
+  <h3>{{ Form::label('','グループ名') }}</h3>
 {{ Form::text('name',Input::old('name',''),array('style'=>'ime-mode:active')) }}
 @if($errors->has('name'))
 <h4 style="color:red;text-align:center">{{ $errors->first('name') }}</h4>
 @endif
-  </div>
-</div>
-<div class="row">
-  <div class="small-3 columns">
-  {{ Form::label('','Eメール',array('class'=>'right')) }}
-  </div>
-  <div class="small-9 columns">
-{{ Form::text('email',Input::old('email',''),array('style'=>'ime-mode:inactive')) }}
-@if($errors->has('email'))
-<h4 style="color:red;text-align:center">{{ $errors->first('email') }}</h4>
-@endif
-  </div>
-</div>
-<div class="row">
-  <div class="small-3 columns">
-  {{ Form::label('','password',array('class'=>'right')) }}
-  </div>
-  <div class="small-9 columns">
-{{ Form::password('password','',array('style'=>'ime-mode:inactive')) }}
-@if($errors->has('password'))
-<h4 style="color:red;text-align:center">{{ $errors->first('password') }}</h4>
-@endif
-  </div>
-</div>
-<div class="row">
-  <div class="small-3 columns">
-  {{ Form::label('','アクティベート',array('class'=>'right')) }}
-  </div>
-  <div class="small-9 columns">
-	{{ Form::radio('activated',1,true) }} 認証
- 	{{ Form::radio('activate',null) }}　拒否
-  </div>
-</div>
-<div class="row">
-  <div class="small-3 columns">
-  {{ Form::label('','グループ',array('class'=>'right')) }}
-  </div>
-  <div class="small-9 columns">
-    {{ Form::select('group_id',$groups,isset($user->group_id) ? $user->group->id :null) }}
-  </div>
-</div>
-<div class="row">
+<div class="panel">
+<h3>{{ Form::label('','permission') }}</h3>
+<h5>{{ Form::checkbox('1','admin') }} adminの全権限</h5>
+  	{{ Form::checkbox('2','admin.view') }} admin.view
+  	{{ Form::checkbox('3','admin.create') }} admin.create
+  	{{ Form::checkbox('4','admin.delte') }} admin.delete
+  	{{ Form::checkbox('5','admin.update') }} admin.update<br>
+<h5>{{ Form::checkbox('6','user') }} userの全権限</h5>
+  	{{ Form::checkbox('7','user.view') }} user.view
+  	{{ Form::checkbox('8','user.create') }} user.create
+  	{{ Form::checkbox('9','user.delete') }} user.delete
+  	{{ Form::checkbox('10','uder.update') }} user.updae<br>
 	<div class="small-3 small-centered columns">
 	{{ Form::submit('新規作成',array('class'=>'button')) }}
-	</div>
-</div>
 </fieldset>
 {{ Form::close() }}
 @stop

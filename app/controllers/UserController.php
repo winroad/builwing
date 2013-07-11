@@ -7,39 +7,41 @@ class UserController extends BaseController{
 */
  public function __construct(){
  //authフィルター
- $this->beforeFilter('auth',array(
- 			'only'=>array('getIndex')));
+ $this->beforeFilter('auth');//,array(
+ 			//'except'=>array('getIndex')));
  //全POSTにcsrfフィルターの適用
  $this->beforeFilter('csrf',array('on'=>'post'));
  }
  
- private function unread(){
+ private function unread($column){
 	 $work=Work::find(Auth::user()->id);
-	 if(isset($work)){
-		 $unread=unserialize($work->message);
-		 return $unread;
-	 }else{
-		 return null;
-	 }
- }
+	 $unread=isset($work) ? unserialize($work->$column) : null;
+	 $column=count($unread) == 0 ? $unread : null;
+		 return $column;
+	}
+ /*private function unread_comment(){
+	 $work=Work::find(Auth::user()->id);
+	 $unread=isset($work) ? unserialize($work->comment) : null;
+	 $comment=count($unread) == 0 ? $unread : null;
+		 return $comment;
+ }*/
 /*
 |------------------------------------
 | TOPページ
 |------------------------------------
 */
  public function getIndex(){
-	 $data['unread']=$this->unread();
-	 $count=count($this->unread()).'件の未読メッセージがあります。';
-	 if($count != 0){
-	 $data['message']=Auth::user()->name.'さんに'.$count.'ここをクリックして確認してください。';
+	 $message=$this->unread('message');
+	 $comment=$this->unread('comment');
+	 if(isset($message)){
+		 $data['message']=count($message).'件の未読メッセージがあります。
+		 			ここをクリックして確認してください。';
+		}
+	 if(isset($comment)){
+		 $data['comment']=count($comment).'件の未読コメントがあります。
+		 			ここをクリックして確認してください。';
 	 }
-	 $comment=Work::find(Auth::user()->id)->pluck('comment');
-	 $comment_id=unserialize(isset($comment) ? $comment : null);
-	 $comment_count=count($comment_id);
-	 //return dd($comment_count);
-	 $data['comment']=Auth::user()->name.'さんに'.$comment_count.'件の新しいコメントがあります。ここをクリックして確認してください。';
-	 //return dd($data['message']);
-	 //return dd($data['midoku']);
+	 $data=isset($data) ? $data : array();
 	 return View::make('user/index',$data);
  }
 /*
@@ -73,8 +75,10 @@ class UserController extends BaseController{
  ->withInput();
  }
  //ユーザーの新規作成
+ $role_id=isset($role->id) ? $role->id : 8;
  $inputs['onepass']=md5(Input::get('name').time());
  $user=User::create($inputs);
+ $user->roles()->sync(array($role_id));
 //アクティベートメールの送信
  $data['onepass']=$inputs['onepass'];
  $data['username']=Input::get('name');

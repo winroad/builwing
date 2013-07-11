@@ -20,9 +20,9 @@
     array('id'=>$group->id)) }}</td>
 -->    <td>{{ $group->name }}</td>
     <td>
-    @if(isset($group->permissions))
-      	{{ $group->permissions }}
-    @endif    
+    @foreach($group->permissions as $k=>$p)
+    	{{ $k }} => {{ $p }}   
+    @endforeach
     </td>
   </tr>
 @endforeach

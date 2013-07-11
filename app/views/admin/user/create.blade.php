@@ -46,19 +46,19 @@
 </div>
 <div class="row">
   <div class="small-3 columns">
-  {{ Form::label('','アクティベート',array('class'=>'right')) }}
+  {{ Form::label('','Role',array('class'=>'right')) }}
   </div>
   <div class="small-9 columns">
-	{{ Form::radio('activated',1,true) }} 認証
- 	{{ Form::radio('activated',null) }}　拒否
+{{ Form::select('role_id',$roles) }}
   </div>
 </div>
 <div class="row">
   <div class="small-3 columns">
-  {{ Form::label('','グループ',array('class'=>'right')) }}
+  {{ Form::label('','アクティベート',array('class'=>'right')) }}
   </div>
   <div class="small-9 columns">
-    {{ Form::select('group_id',$groups,isset($user->group_id) ? $user->group->id :null) }}
+	{{ Form::radio('verified',1,true) }} 認証
+ 	{{ Form::radio('verified',0) }}　拒否
   </div>
 </div>
 <div class="row">

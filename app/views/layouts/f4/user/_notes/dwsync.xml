@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <dwsync>
-<file name="base.blade.php" server="users126.lolipop.jp/builwing/laravel/" local="130177973649322376" remote="130178988600000000" />
-<file name="topbar.blade.php" server="users126.lolipop.jp/builwing/laravel/" local="130178937910585665" remote="130178988600000000" />
+<file name="base.blade.php" server="users126.lolipop.jp/builwing/laravel/" local="130179910018341603" remote="130179909600000000" />
+<file name="topbar.blade.php" server="users126.lolipop.jp/builwing/laravel/" local="130179677262134922" remote="130179909600000000" />
+<file name="sidebar.blade.php" server="users126.lolipop.jp/builwing/laravel/" local="130179903907388736" remote="130179909600000000" />
+<file name="footer.blade.php" server="users126.lolipop.jp/builwing/laravel/" local="130179911661913065" remote="130179911400000000" />
 </dwsync>

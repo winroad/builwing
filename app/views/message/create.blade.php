@@ -5,9 +5,9 @@
 @if(isset($user))
 <h4>{{ Form::label('送信先') }}</h4>
 {{ Form::select('recipient_id',$user) }}
-@elseif(isset($group))
-<h4>{{ Form::label('送信先グループ') }}</h4>
-{{ Form::select('group_id',$group) }}
+@elseif(isset($role))
+<h4>{{ Form::label('送信先ロール') }}</h4>
+{{ Form::select('role_id',$role) }}
 @endif
 <h4>{{ Form::label('タイトル') }}</h4>
 {{ Form::text('subject','',array('style'=>'ime-mode:active')) }}

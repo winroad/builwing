@@ -12,27 +12,20 @@ class UserController extends BaseController{
  //全POSTにcsrfフィルターの適用
  $this->beforeFilter('csrf',array('on'=>'post'));
  }
- 
- private function unread($column){
+ //カラム内の配列の取得
+ private function order($column){
 	 $work=Work::find(Auth::user()->id);
-	 $unread=isset($work) ? unserialize($work->$column) : null;
-	 $column=count($unread) == 0 ? $unread : null;
-		 return $column;
+	 $order=isset($work->$column) ? unserialize($work->$column) : null;
+		 return $order;
 	}
- /*private function unread_comment(){
-	 $work=Work::find(Auth::user()->id);
-	 $unread=isset($work) ? unserialize($work->comment) : null;
-	 $comment=count($unread) == 0 ? $unread : null;
-		 return $comment;
- }*/
 /*
 |------------------------------------
 | TOPページ
 |------------------------------------
 */
  public function getIndex(){
-	 $message=$this->unread('message');
-	 $comment=$this->unread('comment');
+	 $message=$this->order('message');
+	 $comment=$this->order('comment');
 	 if(isset($message)){
 		 $data['message']=count($message).'件の未読メッセージがあります。
 		 			ここをクリックして確認してください。';

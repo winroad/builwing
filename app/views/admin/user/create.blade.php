@@ -57,8 +57,8 @@
   {{ Form::label('','アクティベート',array('class'=>'right')) }}
   </div>
   <div class="small-9 columns">
-	{{ Form::radio('verified',1,true) }} 認証
- 	{{ Form::radio('verified',0) }}　拒否
+	{{ Form::radio('verified',1,true) }} 即時認証
+ 	{{ Form::radio('verified',0) }}　メール認証
   </div>
 </div>
 <div class="row">

@@ -12,6 +12,13 @@ class MessageController extends BaseController{
  $this->beforeFilter('csrf',array('on'=>'post'));
  }
  
+ //カラム内の配列の取得
+ private function order($column){
+	 $work=Work::find(Auth::user()->id);
+	 $order=count($work->$column == 0) ? unserialize($work->$column) : null;
+		 return $order;
+	}
+ 
 /*
 |------------------------------------
 | TOPページ
@@ -19,8 +26,18 @@ class MessageController extends BaseController{
 */
 	public function getIndex(){
 		//ログインユーザーの全メッセージを取得
-		$message=Message::own()->paginate();
-		$data['messages']=(count($message) == 0) ? $message : null;
+		$user=Auth::user();
+		$role_id=Auth::user()->roles()->pluck('id');
+		//return dd($level);
+		$messages=Message::where('recipient_id',$user->id)
+					->orWhere('role_id','>=',$role_id)
+					->orderBy('created_at','desc')
+					->paginate();
+		//return dd($messages);
+		//$recipient=Message::where('recipient_id',$user->id)
+				//->orWhereIn('role_id',$roles->id
+		//$message=Message::own()->paginate();
+		$data['messages']=(count($messages) != 0) ? $messages : null;
 		return View::make('message/index',$data);
 	}	
 	
@@ -31,10 +48,12 @@ class MessageController extends BaseController{
 */
 	public function getCreate($recipient=null){
 		if($recipient=='user'){
-			$data['user']=User::all()->lists('name','id');
+			$recipi=User::all()->lists('name','id');
+			$data['user']=array_except($recipi,array(1));
 		}
 		if($recipient=='role'){
-			$data['role']=Role::all()->lists('name','id');
+			$role=Role::all()->lists('name','id');
+			$data['role']=array_except($role,array(1));
 		}else{
 			$data['empty']='empty';
 		}
@@ -56,10 +75,10 @@ class MessageController extends BaseController{
 					->withErrors($val);
 		}
 		//グループ指定が無ければ
-		if(!isset($inputs['role_id'])){
+		/*if(!isset($inputs['role_id'])){
 			//Userを指定
-			$inputs['role_id']=2;
-		}
+			$inputs['role_id']=6;
+		}*/
 		//データ登録
 		$message=Message::create($inputs);
 
@@ -68,37 +87,62 @@ class MessageController extends BaseController{
 	 * worksテーブルのmessage項目に配列保存
 	 *****************************************/
 		
+		//return dd(Input::all());
+		$recipient_id=Input::get('recipient_id');
+		//return dd($recipient_id);
 		//個人宛メッセージなら
 		if(isset($inputs['recipient_id'])){
 			//受信メッセージの整理
-			$work=Work::find($inputs['recipient_id']);
+			$work=Work::find($recipient_id);
+			//return dd($work);
 			//旧メッセージ
 			$old=isset($work->message) ? unserialize($work->message) : array();
 			//return dd($old);
 			//新メッセージ
 			$new=array($message->id);
+			//return dd($new);
 			//配列の併合
-			$merge=isset($old) ? array_merge($old,$new) : $new;
+			$merge=!isset($old) ? array_merge($old,$new) : $new;
 			//登録データの保存
 			//return dd($merge);
 			$work->message=serialize($merge);
 			$work->save();
+	/*****************************************
+	 * メール送信
+	 *****************************************/
+	 //return dd(Input::all());
+	 		$data['recipient']=User::find($recipient_id)->name;
+			$data['sender']=Auth::user()->name;
+			$data['title']=Input::get('subject');
+			$data['body']=Input::get('body');
+	 		Mail::send('emails.user.message',$data,function($m){
+				$user=User::find(Input::get('recipient_id'));
+				$email=$user->email;
+				$name=$user->name;
+				$m->to($email,$name)->subject('Builwing通信');
+				});	 
+			
 		//Role宛てメッセージなら
 		}else{
 			//新メッセージ
 			$new=array($message->id);
-			//return dd($message->group_id);
-			//指定グループのユーザーを取得
-			$role=Role::find($message->role_id);
-			$users=User::find($role);
+			//return dd($new);
+			//指定ロール以上のレベルのユーザーを取得
+			$users=User::with(array('roles'=>function($query){
+				$query->where('level','<',Input::get('role_id'));
+			}))->get();
+			//return dd($users);
 			//ユーザーの数だけ繰り返し
 			foreach($users as $user):
+			//return dd($user->id);
 				//旧メッセージの取得
 				$work=Work::find($user->id);
+				//return dd($work);
 				$old=isset($work->message) ? unserialize($work->message) : array();
+				//return dd($old);
 				//配列の併合
 				$merge=isset($old) ? array_merge($old,$new) : $new;
-				//return var_dump($merge);
+				//return dd($merge);
 				//登録データの保存
 				$work->message=serialize($merge);
 				$work->save();
@@ -115,9 +159,11 @@ class MessageController extends BaseController{
 	public function getUnread($id=null,$key=null){
 		//ログインユーザーのWorkオブジェクトを取得
 		$work=Work::find(Auth::user()->id);
-		//return dd($work->message);
+		//未読メッセージのID配列取得
+		$message=$this->order('message');
+		//return dd($message);
 		//未読メッセージがなければ
-		if($work->message == null or unserialize($work->message) == null){
+		if(count($message)== 0 or $message == null){
 			return View::make('message/unread')
 				->with('warning','　未読メッセージはありません');
 		}
@@ -136,11 +182,8 @@ class MessageController extends BaseController{
 				//削除後に明細ページへ移動
 				return Redirect::to('message/view/'.$id);
 		}
-		//未読メッセージの配列取得
-		$unread=isset($work) ? unserialize($work->message) : null;
-		//return dd($unread);
 		//配列の数だけオブジェクトを取得
-		foreach($unread as $key=>$value):
+		foreach($message as $key=>$value):
 			$data['message'][]=Message::find($value);
 		endforeach;
 		return View::make('message/unread',$data);

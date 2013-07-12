@@ -1,5 +1,10 @@
 @extends('layouts.f4.user.base')
 @section('content')
+@if(isset($warning))
+<div class="alert-box alert">
+{{ $warning }}
+</div>
+@endif
 @if(isset($message))
 <nobr>
 <marquee loop="-1">

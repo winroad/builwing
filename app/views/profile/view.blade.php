@@ -6,10 +6,6 @@
     <td width="77%">{{Auth::user()->name}}</td>
   </tr>
   <tr>
-    <th scope="row">電話番号</th>
-    <td>{{$profile->tel}}</td>
-  </tr>
-  <tr>
     <th scope="row">Eメール</th>
     <td>{{$profile->user->email }}</td>
   </tr>

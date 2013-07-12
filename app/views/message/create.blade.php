@@ -24,7 +24,10 @@
   	</div>
 	@endif
   <br>
-{{ Form::hidden('sender_id',Auth::user()->id) }}
+@if(!isset($role) and !isset($uer))
+{{ Form::hidden('role_id',6) }}
+@endif
+{{ Form::hidden('user_id',Auth::user()->id) }}
 {{ Form::submit('送信',array('class'=>'button')) }}
 {{ Form::close() }}
 @stop

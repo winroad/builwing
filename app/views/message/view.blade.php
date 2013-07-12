@@ -13,16 +13,22 @@
   </tr>
   <tr>
     <th scope="row">送信者</th>
-    <td>{{ User::find($messages->sender_id)->name }}</td>
+    <td>{{ (User::find($messages->user_id)->name).'　から' }}</td>
   </tr>
+  @if(isset($messages->recipient_id))
   <tr>
     <th scope="row">送信先</th>
-    <td>{{ isset(User::find($messages->recipient_id)->name) ?: null }}</td>
+    <td>
+    {{ isset($messages->recipient_id) ? User::find($messages->recipient_id)->name : null }}
+    </td>
   </tr>
+  @endif
+  @if(isset($messages->role_id))
   <tr>
-    <th scope="row">送信先グループ</th>
-    <td>{{ isset($messages->group_id) ? Group::find($messages->group_id)->name : null }}</td>
-  </tr>  
+    <th scope="row">送信先</th>
+    <td>{{ (isset($messages->role_id) ? Role::find($messages->role_id)->name : null).'　全員へ' }}</td>
+  </tr>
+  @endif  
   <tr>
     <th scope="row">タイトル</th>
     <td>{{ $messages->subject }}</td>

@@ -20,6 +20,7 @@
   	<li>{{ HTML::link('message/unread','未読メッセージ') }}
   	<li>{{ HTML::link('comment/unread','未読コメント') }}
   	<li>{{ HTML::link('message','メッセージ一覧') }}
+  	<li>{{ HTML::link('comment/index','コメント一覧') }}
   	<li>{{ HTML::link('message/create','メッセージ作成') }}
 		<li class="has-dropdown">
 		<a href="#">指定メッセージ</a>
@@ -79,6 +80,7 @@
 </li>
 <li>{{ HTML::link('#','設定変更') }}</li>
 <li>{{ HTML::link('history/index','修正履歴') }}</li>
+<li>{{ HTML::link('user/password/'.Auth::user()->id,'Password変更') }}</li>
 <li class="divider"></li>
 <li>{{ HTML::link('login/logout','ログアウト') }}</li>
 </ul>

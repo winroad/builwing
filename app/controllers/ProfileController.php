@@ -12,6 +12,13 @@ class ProfileController extends BaseController{
  $this->beforeFilter('csrf',array('on'=>'post'));
  }
  
+ //カラム内の配列の取得
+ private function order($column){
+	 $work=Work::find(Auth::user()->id);
+	 $order=isset($work->$column) ? unserialize($work->$column) : null;
+		 return $order;
+	}
+ 
 /*
 |----------------------------------------
 | Topページ
@@ -94,18 +101,26 @@ class ProfileController extends BaseController{
 |----------------------------------------
 */
 	public function getView($id){
+		$user=Auth::user();
+		$profile=$user->profile;
 		//データの取得
-		$data['profile']=Profile::find($id);
+		$data['profile']=$profile;
+		$data['address']=$this->order('address');
+		$data['body']=$this->order('body');
+		$data['license']=$this->order('license');
+		$data['work']=$this->order('work');
+		$data['family']=$this->order('family');
+		/*$data['profile']=Profile::find($id);
 		$data['address']=Profile::item('address');
 		$data['body']=Profile::item('body');
 		$data['license']=Profile::item('license');
 		$data['work']=Profile::item('work');
-		$data['family']=Profile::item('family');
+		$data['family']=Profile::item('family');*/
 		//プロフィール数が0で無ければ
-		if(isset($data['profile'])){
+		if(isset($profile)){
 			return View::make('profile/view',$data);
 		}
-			return Redirect::action('ProfileController@getCreate')
+			return View::make('profile/create',$data)
 					->with('message','プロフィールを作成してください');
 	}
 /*

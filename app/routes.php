@@ -37,7 +37,13 @@ View::composer('admin/*',function($view){
 });
 
 Route::get('sample',function(){
-    $roles=Auth::user()->roles->first()->name;
-		 
-    return dd($roles);
+	 	//$works=date('Y/m/d H:i:s',time()+172800); 
+	 	$works=mt_rand(0,99999999); 
+	 	//$works=time()+172800; 
+    return dd($works);
 });
+
+Form::macro('myField',function(){
+	return '<h1>Formマクロのテスト</h1>';
+});
+

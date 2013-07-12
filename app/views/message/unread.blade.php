@@ -18,7 +18,7 @@
 @foreach($message as $key=>$value)
   <tr>
     <td>{{ HTML::link('message/unread/'.$value->id.'/'.$key,$value->subject,array('class'=>'button small alert expand')) }}</td>
-    <td>{{ User::find($value->sender_id)->name }}</td>
+    <td>{{ User::find($value->user_id)->name }}</td>
     <td>{{ date('m/d',strtotime($value->created_at)) }}</td>
   </tr>
 @endforeach

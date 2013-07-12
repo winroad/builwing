@@ -101,7 +101,7 @@ class AdminController extends BaseController{
  $rules=array(
  'name'=>'required',
  'email'=>'required|email|unique:users',
- 'password'=>'required|min:4',
+ 'password'=>'required|between:8,16',
  );
  //バリデーションチェック
  $val=Validator::make($inputs,$rules);
@@ -116,6 +116,8 @@ class AdminController extends BaseController{
  /*******************************
   *  新規作成
 	*******************************/
+	//即時認証
+	if(Input::get('verifide') == 1){
 	$role_id=Input::get('role_id');
 	//return dd($role_id);
 	$role_id=isset($role_id) ? $role_id : 8;
@@ -133,6 +135,35 @@ class AdminController extends BaseController{
 	$user->roles()->sync(array($role_id));
 	//コントローラアクションへパラメーターを渡し、リダレクト
 	return Redirect::to('admin/user');
+	//メール認証手続き
+	}else{
+		//メール送信データの整理
+		$data['name']=Input::get('name');
+		$data['password']=mt_rand(0,99999999);
+		$data['onepass']=md5(time());
+		$data['limit']=date('Y/m/d H:i:s',time()+172800);
+		//メール送信
+		Mail::send('emails.auth.activate',$data,
+			function($m){
+				$email=Input::get('email');
+				$name=Input::get('name');
+				$m->to($email,$name)
+				->subject('アクティベーション');
+			});
+			
+		//仮登録手続き
+		$activate=new Activate();
+		$activate->name=Input::get('name');
+		$activate->password=$data['password'];
+		$activate->email=Input::get('email');
+		$activate->role_id=Input::get('role_id');
+		$activate->onepass=$data['onepass'];
+		$activate->limit=$data['limit'];
+		$activate->save();
+		
+		return View::make('admin/index')
+				->with('warning','ユーザー仮登録が完了しました');
+		}
  }
 /*
 |------------------------------------

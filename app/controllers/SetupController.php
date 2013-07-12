@@ -472,7 +472,9 @@ public function getBelongs(){
 		//投稿者ID
 		$table->integer('submitter_id');
 		//受信者ID（個人宛ポストの場合）
-		$table->integer('recipient_id');
+		$table->integer('recipient_id')->nullable();
+		//RoleID（Role宛ポストの場合）
+		$table->integer('role_d')->nullable();
 		//コメント内容
 		$table->text('body');
  		//created_atとupdated_atの同時作成
@@ -584,7 +586,7 @@ public function getBelongs(){
  	Schema::create('messages',function($table){
  		$table->increments('id');
 		//送信者ID
-		$table->integer('sender_id');
+		$table->integer('user_id');
 		//受信者ID（個人宛ポストの場合）
 		$table->integer('recipient_id')->nullable();
 		//受信RoleID
@@ -830,12 +832,11 @@ public function getAll(){
 
             $table->increments('id');
             $table->string('name', 30)->index();
-            $table->string('password', 60)->index();
+            $table->string('password', 64)->index();
             $table->string('salt', 32);
             $table->string('email', 255)->index();
             $table->boolean('verified')->default(0);
             $table->boolean('disabled')->default(0);
-            //$table->boolean('deleted')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -875,7 +876,6 @@ public function getAll(){
 
         $user_id = DB::table('users')->insertGetId(array(
             'name' => 'admin',
-            //'password' => Hash::make('admin'),
             'password' => '$2a$08$rqN6idpy0FwezH72fQcdqunbJp7GJVm8j94atsTOqCeuNvc3PzH3m',
             'salt' => 'a227383075861e775d0af6281ea05a49',
             'email' => 'admin@example.com',
@@ -892,6 +892,31 @@ public function getAll(){
             'updated_at' => date('Y-m-d H:i:s')
         ));
 		$data['warning']='全Verify関連の一括作成が完了しました。';
+		return View::make('setup/index',$data);
+	}
+	
+/*
+|---------------------------------------------
+|	activates(アクティベーション用）テーブルの作成
+|---------------------------------------------
+*/
+	public function getActivates(){
+ 	if(Schema::hasTable('activates')){
+		$data['warning']='activatesテーブルが存在しますので、処理を中止します。';
+		return View::make('setup/index',$data);
+	}
+ 	Schema::create('activates',function($table){
+            $table->increments('id');
+            $table->string('name', 30);
+            $table->string('password', 64);
+            $table->string('email', 255);
+            $table->integer('role_id');
+            $table->string('salt', 32);
+            $table->string('onepass', 64);
+            $table->timestamp('limit');
+            $table->timestamps();
+ 	});
+		$data['warning']='activatesテーブルを作成しました。';
 		return View::make('setup/index',$data);
 	}
 }

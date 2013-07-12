@@ -35,10 +35,16 @@ class LoginController extends BaseController{
  ->withInput();
  }
  //ログイン認証
- if(Auth::attempt($inputs)){
+ try{
+	 
+ Auth::attempt($inputs);
  	return Redirect::intended('/');
+ 
  }
-	 return 'ログインできません';
+ catch(Exception $e){
+ 	return Redirect::back()
+		->with('message',$e->getMessage());
+ }
  
  }
 /*
@@ -102,6 +108,65 @@ class LoginController extends BaseController{
  public function getLogout(){
 	 Auth::logout();
 	 return Redirect::to('/');
+ }
+/*
+|-----------------------------------------
+| アクティベート
+|-----------------------------------------
+*/
+ public function getActivate($onepass){
+	 $data['onepass']=$onepass;
+	 //return dd($data);
+	 return View::make('login/activate',$data);
+ }
+ 
+ public function postActivate(){
+	 //return dd(Input::all());
+	 $inputs=Input::only('password');
+	 $rules=array('password'=>'required|between:8,16');
+	 $val=Validator::make($inputs,$rules);
+	 		if($val->fails()){
+				return Redirect::back()
+					->InputErrors($val);
+			}
+	//本登録手続き
+	$onepass=Input::get('onepass');
+	//return dd($onepass);
+	$password=Input::get('password');
+	$limit=date('Y/m/d H:i:s');
+	$activate=Activate::where('onepass',$onepass)
+				->where('password',$password)
+				->where('limit','>',$limit)
+				->first();
+	//return dd($activate);
+	if(isset($activate)){
+		//ユーザー登録
+		$user=new User();
+		$user->name=$activate->name;
+		$user->password=$activate->password;
+		$user->email=$activate->email;
+		$user->verified=1;
+		//userの作成
+		$user->save();
+		//ロールの作成
+	  $user->roles()->sync(array($activate->role_id));
+		$profile['id']=$user->id;
+		//profileの作成
+		$pro=Profile::create($profile);
+		$work['id']=$user->id;
+		//workの作成
+		Work::create($work);
+		
+		//仮登録の削除
+		$activate->delete();
+		
+		return View::make('/');
+	
+ //該当者がいなければ
+ }else{
+ return 'アクティベートできません。';
+ }
+ 
  }
  
 }

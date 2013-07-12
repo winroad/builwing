@@ -20,9 +20,11 @@ class Message extends Eloquent{
 */
 	//ユーザー所有のメッセージ
 	public function scopeOwn($query){
+		/*$user=Auth::user();
+		$role=DB::table('roles')->find(
 		$query=Message::where('recipient_id','=',Auth::user()->id)
-			//->orWhere('role_id','>=',Auth::user()->group_id)
+			->orWhere('role_id','<=',Auth::user()->role-first->id)
 	 		->orderBy('created_at','desc');
-		return $query;
+		return $query;*/
 	}
 }

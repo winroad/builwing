@@ -73,7 +73,14 @@
   <tr>
     <td>13</td>
     <td><p>comments</p></td>
-    <td>{{ HTML::link('setup/verify','Verify管理用4テーブル') }}</td>
+    <td>{{ HTML::link('setup/verify','Verify管理用5テーブル') }}<br>
+    users,roles,permissions,role_user,permission_role
+    </td>
+  </tr>
+  <tr>
+    <td>14</td>
+    <td><p>activates</p></td>
+    <td>{{ HTML::link('setup/activates','アクティベート管理用テーブル') }}</td>
   </tr>
   <tr>
     <td>&nbsp;</td>

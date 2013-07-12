@@ -26,11 +26,11 @@ class UserController extends BaseController{
  public function getIndex(){
 	 $message=$this->order('message');
 	 $comment=$this->order('comment');
-	 if(isset($message)){
+	 if(count($message) != 0){
 		 $data['message']=count($message).'件の未読メッセージがあります。
 		 			ここをクリックして確認してください。';
 		}
-	 if(isset($comment)){
+	 if(count($comment) != 0){
 		 $data['comment']=count($comment).'件の未読コメントがあります。
 		 			ここをクリックして確認してください。';
 	 }
@@ -143,5 +143,35 @@ class UserController extends BaseController{
 	 Auth::logout();
 	 return Redirect::to('/');
  }
- 
+ /*
+|-----------------------------------------
+| パスワードの変更
+|-----------------------------------------
+*/
+	public function getPassword($id){
+		//ユーザーの特定
+		$user=Auth::user();
+		if($id == $user->id){
+			return View::make('user/password');
+		}
+		return View::make('user/index')
+				->with('warning','Password更新権利がありません。');
+	}
+	public function postPassword($action=null,$id=null){
+		if($action == 'reset' and $id == Auth::user()->id){
+			$inputs=Input::only('password');
+			$rules=array('password'=>'required|alpha_dash|between:4,16');
+			$val=Validator::make($inputs,$rules);
+			if($val->fails()){
+				return Redirect::back()
+						->withInput()
+						->withErrors($val);
+			}
+			//Passwordの変更処理
+			$user=Auth::user();
+			$user->password=Input::get('password');
+			$user->save();
+		}
+		return View::make('user/index');
+	}
 }

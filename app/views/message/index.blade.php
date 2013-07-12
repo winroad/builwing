@@ -19,16 +19,21 @@
 </div>
 @if(isset($messages))
 <table width="100%" border="0">
+<tr>
+	<th>タイトル</td>
+	<th>送信者</td>
+	<th>日付</td>
+</tr>
   <tr>
 @foreach($messages as $message)
-    <td width="65%">{{ HTML::link('message/view/'.$message->id,$message->subject,array('class'=>'button large expand')) }}</td>
-    <td width="20%">送信者：{{ User::find($message->sender_id)->name }}</td>
-    <td width="15%">{{ date('n月j日',strtotime($message->created_at)) }}</td>
+    <td width="70%">{{ HTML::link('message/view/'.$message->id,$message->subject,array('class'=>'button expand')) }}</td>
+    <td width="12%">{{ User::find($message->user_id)->name }}</td>
+    <td width="12%">{{ date('n月j日',strtotime($message->created_at)) }}</td>
   </tr>
-  <tr>
+<!--  <tr>
     <td colspan="3">{{ $message->body }}</td>
   </tr>
-@endforeach
+-->@endforeach
 </table>
 <h5>{{ $messages->links() }}</h5>
 @endif

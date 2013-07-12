@@ -4,64 +4,121 @@ class SetupController extends BaseController{
 public function getIndex(){
 	return View::make('setup/index');
 }
-//usersテーブルの作成
-public function getUsers(){
-	//usersテーブルの存在確認
- 	if(Schema::hasTable('users')){
-		$data['warning']='usersテーブルが存在しますので、処理を中止します。';
+
+/*--------------------------------------------
+|	verify関連テーブルの作成
+|---------------------------------------------
+*/
+	//prmissionsテーブルの存在確認
+	public function getVerify(){
+ 	if(Schema::hasTable('permissions')){
+		$data['warning']='permissionsテーブルが存在しますので、処理を中止します。';
 		return View::make('setup/index',$data);
 	}
-	//usersテーブルの作成
- 	Schema::create('users',function($table){
- 		$table->increments('id');
-		$table->string('name',32);
- 		$table->string('email',100);
- 		$table->string('password',100);
- 		$table->text('permissions')->nullable();
- 		$table->tinyinteger('activated')->default(0);
- 		$table->string('activation_code')->nullable();
- 		$table->string('activated_at')->nullable();
- 		$table->string('last_login')->nullable();
- 		$table->string('persist_code')->nullable();
- 		$table->string('reset_password_code')->nullable();
- 		$table->string('first_name')->nullable();
- 		$table->string('last_name')->nullable;
- 		//$table->tinyinteger('activate')->default(0);
-		//権限管理ID
- 		//$table->integer('group_id')->nullable();
-		//グループ管理ID
- 		//$table->integer('group_id')->nullable();
-		//プロフィールID
- 		//$table->integer('profile_id')->nullable();
-		//労務管理ID
- 		//$table->integer('work_id')->nullable();
- 		//created_atとupdated_atの同時作成
- 		$table->timestamps();
-		//deleted_atカラムを追加
-		$table->softDeletes();
- 	});
-	//初期Adminの作成
-	User::create(array(
-			'name'=>'Admin',
-			'email'=>'admin@winroad.jp',
-			'password'=>'admin',
-			'activated'=>1,
-			));
-		$data['warning']='usersテーブルを作成しました。';
+		
+    Schema::create('permissions', function($table)
+    {
+            $table->engine = 'InnoDB';
+
+            $table->increments('id');
+            $table->string('name', 100)->index();
+            $table->string('description', 255)->nullable();
+            $table->timestamps();
+        });
+
+        // Create the roles table
+        Schema::create('roles', function($table)
+        {
+            $table->engine = 'InnoDB';
+
+            $table->increments('id');
+            $table->string('name', 100)->index();
+            $table->string('description', 255)->nullable();
+            $table->integer('level');
+            $table->softDeletes();
+            $table->timestamps();
+        });
+
+        // Create the users table
+        Schema::create('users', function($table)
+        {
+            $table->engine = 'InnoDB';
+
+            $table->increments('id');
+            $table->string('name', 30)->index();
+            $table->string('password', 64)->index();
+            $table->string('salt', 32);
+            $table->string('email', 255)->index();
+            $table->boolean('verified')->default(0);
+            $table->boolean('disabled')->default(0);
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        // Create the role/user relationship table
+        Schema::create('role_user', function($table)
+        {
+            $table->engine = 'InnoDB';
+
+            $table->integer('user_id')->unsigned()->index();
+            $table->integer('role_id')->unsigned()->index();
+            $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('role_id')->references('id')->on('roles');
+        });
+
+        // Create the permission/role relationship table
+        Schema::create('permission_role', function($table)
+        {
+            $table->engine = 'InnoDB';
+
+            $table->integer('permission_id')->unsigned()->index();
+            $table->integer('role_id')->unsigned()->index();
+            $table->timestamps();
+
+            $table->foreign('permission_id')->references('id')->on('permissions');
+            $table->foreign('role_id')->references('id')->on('roles');
+        });
+
+        $role_id = DB::table('roles')->insertGetId(array(
+            'name' => Config::get('verify::super_admin'),
+            'level' => 10,
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
+        ));
+
+        $user_id = DB::table('users')->insertGetId(array(
+            'name' => 'admin',
+            'password' => '$2a$08$rqN6idpy0FwezH72fQcdqunbJp7GJVm8j94atsTOqCeuNvc3PzH3m',
+            'salt' => 'a227383075861e775d0af6281ea05a49',
+            'email' => 'admin@example.com',
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
+            'verified' => 1,
+            'disabled' => 0,
+        ));
+
+        DB::table('role_user')->insert(array(
+            'role_id' => $role_id,
+            'user_id' => $user_id,
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
+        ));
+		$data['warning']='全Verify関連の一括作成が完了しました。';
 		return View::make('setup/index',$data);
- 	}
+	}
+
 /*
 |---------------------------------------------
 |	profilesテーブルの作成
 |---------------------------------------------
 */
 public function getProfiles(){
-	//profilesテーブルの存在確認
  	if(Schema::hasTable('profiles')){
 		$data['warning']='profilesテーブルが存在しますので、処理を中止します。';
 		return View::make('setup/index',$data);
 	}
-	//profilesテーブルの作成
  	Schema::create('profiles',function($table){
  		$table->increments('id');
 		//usersテーブルへのリレーション用
@@ -80,85 +137,10 @@ public function getProfiles(){
  		$table->text('family')->nullable();
 		//その他(シリアライズ)
  		$table->text('note')->nullable();
-		//メッセージ(シリアライズ)......未読メッセージ用
- 		//$table->text('message')->nullable();
-		//TODO(シリアライズ)......未処理TODO用
- 		//$table->text('todo')->nullable();
- 		//created_atとupdated_atの同時作成
  		$table->timestamps();
-		//deleted_atカラムを追加
 		$table->timestamp('deleted_at')->nullable();
  	});
 		$data['warning']='profilesテーブルを作成しました。';
-		return View::make('setup/index',$data);
-	}
-/*
-|---------------------------------------------
-|	rolesテーブルの作成
-|---------------------------------------------
-*
-public function getRoles(){
-	//rolesテーブルの存在確認
- 	if(Schema::hasTable('roles')){
-		$data['warning']='rolesテーブルが存在しますので、処理を中止します。';
-		return View::make('setup/index',$data);
-	}
-	//rolesテーブルの作成
- 	Schema::create('roles',function($table){
- 		$table->increments('id');
-		$table->string('name',32);
- 		$table->integer('level')->nullable();
- 		//created_atとupdated_atの同時作成
- 		$table->timestamps();
-		//deleted_atカラムを追加
-		$table->timestamp('deleted_at')->nullable();	
- 	});
-	//新規Roleの作成
-	Role::create(array(
-			'name'=>'Admin',
-			'level'=>100,
-			));
-	Role::create(array(
-			'name'=>'Director',
-			'level'=>90,
-			));
-	Role::create(array(
-			'name'=>'General Manager',
-			'level'=>80,
-			));
-	Role::create(array(
-			'name'=>'Manager',
-			'level'=>70,
-			));
-	Role::create(array(
-			'name'=>'Chief',
-			'level'=>60,
-			));
-	Role::create(array(
-			'name'=>'Staff',
-			'level'=>50,
-			));
-	Role::create(array(
-			'name'=>'Member',
-			'level'=>40,
-			));
-	Role::create(array(
-			'name'=>'Outsourcing',
-			'level'=>30,
-			));
-	Role::create(array(
-			'name'=>'Super User',
-			'level'=>20,
-			));
-	Role::create(array(
-			'name'=>'User',
-			'level'=>1,
-			));
-	Role::create(array(
-			'name'=>'Banned',
-			'level'=>0,
-			));
-		$data['warning']='rolesテーブルを作成しました。';
 		return View::make('setup/index',$data);
 	}
 /*
@@ -180,9 +162,7 @@ public function getGroups(){
 		//グループ名(会社名・所属先)
 		$table->string('name',100);
  		$table->text('permissions')->nullable();
- 		//created_atとupdated_atの同時作成
  		$table->timestamps();
-		//ソフトデリート用
 		$table->softDeletes();		
  	});
 		$data['warning']='groupsテーブルを作成しました。';
@@ -208,43 +188,17 @@ public function getGroupUser(){
 	}
 /*
 |---------------------------------------------
-|	throttleテーブルの作成
+|	company(部署・所属先)テーブルの作成
 |---------------------------------------------
 */
-public function getThrottle(){
-	//groupsテーブルの存在確認
- 	if(Schema::hasTable('throttle')){
-		$data['warning']='throttleテーブルが存在しますので、処理を中止します。';
-		return View::make('setup/index',$data);
-	}
-	//throttleテーブルの作成
- 	Schema::create('throttle',function($table){
- 		$table->increments('id');
-		$table->integer('user_id');
-		$table->string('ip_address')->nullable();
-		//グループ略称
-		$table->integer('attempts')->default(0);
-		$table->tinyinteger('suspended')->default(0);
-		$table->tinyinteger('banned')->default(0);
-		$table->timestamp('last_attempt_at')->nullable();
-		$table->timestamp('suspended_at')->nullable();
- 	});
-		$data['warning']='throttleテーブルを作成しました。';
-		return View::make('setup/index',$data);
-	}
-/*
-|---------------------------------------------
-|	belongs(部署・所属先)テーブルの作成
-|---------------------------------------------
-*/
-public function getBelongs(){
+public function getCompany(){
 	//belongsテーブルの存在確認
- 	if(Schema::hasTable('belongs')){
-		$data['warning']='belongsテーブルが存在しますので、処理を中止します。';
+ 	if(Schema::hasTable('companies')){
+		$data['warning']='companiesテーブルが存在しますので、処理を中止します。';
 		return View::make('setup/index',$data);
 	}
 	//belongsテーブルの作成
- 	Schema::create('belongs',function($table){
+ 	Schema::create('companies',function($table){
  		$table->increments('id');
 		//部署名
 		$table->string('name',100)->nullable();
@@ -260,9 +214,9 @@ public function getBelongs(){
  		//created_atとupdated_atの同時作成
  		$table->timestamps();
 		//deleted_atカラムを追加
-		$table->timestamp('deleted_at')->nullable();		
+		$table->SoftDeletes();		
  	});
-		$data['warning']='belongsテーブルを作成しました。';
+		$data['warning']='companyテーブルを作成しました。';
 		return View::make('setup/index',$data);
 	}
 	
@@ -427,38 +381,6 @@ public function getBelongs(){
 	
 /*
 |---------------------------------------------
-|	posts(投稿)テーブルの作成
-|---------------------------------------------
-*/
-	public function getPosts(){
- 	if(Schema::hasTable('posts')){
-		$data['warning']='postsテーブルが存在しますので、処理を中止します。';
-		return View::make('setup/index',$data);
-	}
- 	Schema::create('posts',function($table){
- 		$table->increments('id');
-		//投稿者ID
-		$table->integer('submitter_id');
-		//受信者ID（個人宛ポストの場合）
-		$table->integer('recipient_id')->nullable();
-		//受信グループID
-		$table->integer('group_id')->nullable();
-		//受信RoleID
-		$table->integer('role_id')->nullable();
-		//表題
-		$table->string('subject',200);
-		//投稿内容
-		$table->text('body');
- 		//created_atとupdated_atの同時作成
- 		$table->timestamps();
-		//ソフトデリート用
-		$table->softDeletes();	
- 	});
-		$data['warning']='postsテーブルを作成しました。';
-		return View::make('setup/index',$data);
-	}
-/*
-|---------------------------------------------
 |	comments(コメント)テーブルの作成
 |---------------------------------------------
 */
@@ -483,30 +405,6 @@ public function getBelongs(){
 		$table->softDeletes();	
  	});
 		$data['warning']='commentsテーブルを作成しました。';
-		return View::make('setup/index',$data);
-	}
-/*
-|---------------------------------------------
-|	comment_postテーブルの作成
-|---------------------------------------------
-*/
-	public function getCommentPost(){
- 	if(Schema::hasTable('comment_post')){
-		$data['warning']='comment_postテーブルが存在しますので、処理を中止します。';
-		return View::make('setup/index',$data);
-	}
- 	Schema::create('comment_post',function($table){
- 		$table->increments('id');
-		//ポストID
-		$table->integer('post_id');
-		//コメントID
-		$table->integer('comment_id');
- 		//created_atとupdated_atの同時作成
- 		$table->timestamps();
-		//ソフトデリート用
-		$table->softDeletes();	
- 	});
-		$data['warning']='comment_postテーブルを作成しました。';
 		return View::make('setup/index',$data);
 	}
 	
@@ -605,295 +503,7 @@ public function getBelongs(){
 		$data['warning']='messagesテーブルを作成しました。';
 		return View::make('setup/index',$data);
 	}
-/*
-|---------------------------------------------
-|	users関連テーブルの一括作成
-|---------------------------------------------
-|	1.usersテーブルの作成
-|	2.profileテーブルの作成
-|	3.rolesテーブル及び基本Roleの作成
-|	4.groups(会社、所属先)テーブルの作成
-|	5.belong(部署)テーブルの作成
-|
-*/
-//usersテーブルの作成
-public function getAll(){
-	//usersテーブルの存在確認
- 	if(Schema::hasTable('users')){
-		$data['warning']='usersテーブルが存在しますので、処理を中止します。';
-		return View::make('setup/index',$data);
-	}
-	//usersテーブルの作成
- 	Schema::create('users',function($table){
- 		$table->increments('id');
-		$table->string('name',32);
- 		$table->string('email',100);
- 		$table->string('password',64);
- 		$table->string('onepass');
- 		$table->tinyinteger('activate')->default(0);
- 		$table->integer('role_id')->nullable();
- 		$table->integer('group_id')->nullable();
- 		//created_atとupdated_atの同時作成
- 		$table->timestamps();
-		//deleted_atカラムを追加
-		$table->timestamp('deleted_at')->nullable();
- 	});
-	//初期Adminの作成
-	User::create(array(
-			'name'=>'Admin',
-			'email'=>'admin@winroad.jp',
-			'password'=>'admin',
-			'onepass'=>md5('admin'.time()),
-			'activate'=>1,
-			'role_id'=>1,
-			'group_id'=>1,
-			));
-/*
-|---------------------------------------------
-|	profilesテーブルの作成
-|---------------------------------------------
-*/
-	//usersテーブルの存在確認
- 	if(Schema::hasTable('profiles')){
-		$data['warning']='profilesテーブルが存在しますので、処理を中止します。';
-		return View::make('setup/index',$data);
-	}
-	//profilesテーブルの作成
- 	Schema::create('profiles',function($table){
- 		$table->increments('id');
-		//usersテーブルへのリレーション用
-		$table->integer('user_id')->nullable();
-		//電話番号
-		$table->string('tel',20)->nullable();
-		//address関連情報（シリアライズ）
-		$table->text('address')->nullable();
-		//身体関連情報(シリアライズ)
- 		$table->text('body')->nullable();
-		//資格関連情報(シリアライズ)
- 		$table->text('license')->nullable();
-		//労務関連情報(シリアライズ)
- 		$table->text('work')->nullable();
-		//家族関連情報(シリアライズ)
- 		$table->text('family')->nullable();
-		//その他(シリアライズ)
- 		$table->text('note')->nullable();
- 		//$table->integer('group_id')->nullable();
- 		$table->text('profile')->nullable();
- 		//created_atとupdated_atの同時作成
- 		$table->timestamps();
-		//deleted_atカラムを追加
-		$table->timestamp('deleted_at')->nullable();
- 	});
-/*
-|---------------------------------------------
-|	rolesテーブルの作成
-|---------------------------------------------
-*/
-	//rolesテーブルの存在確認
- 	if(Schema::hasTable('roles')){
-		$data['warning']='rolesテーブルが存在しますので、処理を中止します。';
-		return View::make('setup/index',$data);
-	}
-	//rolesテーブルの作成
- 	Schema::create('roles',function($table){
- 		$table->increments('id');
-		$table->string('name',32);
- 		$table->integer('level')->nullable();
- 		//created_atとupdated_atの同時作成
- 		$table->timestamps();
-		//deleted_atカラムを追加
-		$table->timestamp('deleted_at')->nullable();	
- 	});
-	//新規Roleの作成
-	Role::create(array(
-			'name'=>'Admin',
-			'level'=>100,
-			));
-	Role::create(array(
-			'name'=>'Manager',
-			'level'=>70,
-			));
-	Role::create(array(
-			'name'=>'Moderator',
-			'level'=>50,
-			));
-	Role::create(array(
-			'name'=>'Staff',
-			'level'=>30,
-			));
-	Role::create(array(
-			'name'=>'User',
-			'level'=>1,
-			));
-	Role::create(array(
-			'name'=>'Banned',
-			'level'=>0,
-			));
-/*
-|---------------------------------------------
-|	groupsテーブルの作成
-|---------------------------------------------
-*/
-	//groupsテーブルの存在確認
- 	if(Schema::hasTable('groups')){
-		$data['warning']='groupsテーブルが存在しますので、処理を中止します。';
-		return View::make('setup/index',$data);
-	}
-	//groupsテーブルの作成
- 	Schema::create('groups',function($table){
- 		$table->increments('id');
-		//グループ略称
-		$table->string('abbreviation',100);
-		//グループ名(会社名・所属先)
-		$table->string('name',100);
- 		$table->integer('level')->nullable();
- 		//created_atとupdated_atの同時作成
- 		$table->timestamps();
-		//deleted_atカラムを追加
-		$table->timestamp('deleted_at')->nullable();		
- 	});
-	//新規Groupの作成
-	/*Group::create(array(
-			'abbreviation'=>'Builwing',
-			'name'=>'株式会社ビルウイング',
-			'level'=>100,
-			));
-/*
-|---------------------------------------------
-|	belongs(部署・所属先)テーブルの作成
-|---------------------------------------------
-*/
-	//belongsテーブルの存在確認
- 	if(Schema::hasTable('belongs')){
-		$data['warning']='belongsテーブルが存在しますので、処理を中止します。';
-		return View::make('setup/index',$data);
-	}
-	//belongsテーブルの作成
- 	Schema::create('belongs',function($table){
- 		$table->increments('id');
-		//部署名
-		$table->string('name',100)->nullable();
-		$table->integer('group_id')->nullable();
-		//address関連情報(シリアライズ)
- 		$table->text('address')->nullable();
-		//取引関連情報(シリアライズ)
- 		$table->text('business')->nullable();
-		//内部関連情報(シリアライズ)
- 		$table->text('inside')->nullable();
-		//備考情報(シリアライズ)
- 		$table->text('note')->nullable();
- 		//created_atとupdated_atの同時作成
- 		$table->timestamps();
-		//deleted_atカラムを追加
-		$table->timestamp('deleted_at')->nullable();		
- 	});
-		$data['warning']='全users関連の一括作成が完了しました。';
-		return View::make('setup/index',$data);
-}
 
-/*|---------------------------------------------
-|	verify関連テーブルの作成
-|---------------------------------------------
-*/
-	//prmissionsテーブルの存在確認
-	public function getVerify(){
- 	if(Schema::hasTable('permissions')){
-		$data['warning']='permissionsテーブルが存在しますので、処理を中止します。';
-		return View::make('setup/index',$data);
-	}
-		
-    Schema::create('permissions', function($table)
-    {
-            $table->engine = 'InnoDB';
-
-            $table->increments('id');
-            $table->string('name', 100)->index();
-            $table->string('description', 255)->nullable();
-            $table->timestamps();
-        });
-
-        // Create the roles table
-        Schema::create('roles', function($table)
-        {
-            $table->engine = 'InnoDB';
-
-            $table->increments('id');
-            $table->string('name', 100)->index();
-            $table->string('description', 255)->nullable();
-            $table->integer('level');
-            $table->softDeletes();
-            $table->timestamps();
-        });
-
-        // Create the users table
-        Schema::create('users', function($table)
-        {
-            $table->engine = 'InnoDB';
-
-            $table->increments('id');
-            $table->string('name', 30)->index();
-            $table->string('password', 64)->index();
-            $table->string('salt', 32);
-            $table->string('email', 255)->index();
-            $table->boolean('verified')->default(0);
-            $table->boolean('disabled')->default(0);
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
-        // Create the role/user relationship table
-        Schema::create('role_user', function($table)
-        {
-            $table->engine = 'InnoDB';
-
-            $table->integer('user_id')->unsigned()->index();
-            $table->integer('role_id')->unsigned()->index();
-            $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('role_id')->references('id')->on('roles');
-        });
-
-        // Create the permission/role relationship table
-        Schema::create('permission_role', function($table)
-        {
-            $table->engine = 'InnoDB';
-
-            $table->integer('permission_id')->unsigned()->index();
-            $table->integer('role_id')->unsigned()->index();
-            $table->timestamps();
-
-            $table->foreign('permission_id')->references('id')->on('permissions');
-            $table->foreign('role_id')->references('id')->on('roles');
-        });
-
-        $role_id = DB::table('roles')->insertGetId(array(
-            'name' => Config::get('verify::super_admin'),
-            'level' => 10,
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
-        ));
-
-        $user_id = DB::table('users')->insertGetId(array(
-            'name' => 'admin',
-            'password' => '$2a$08$rqN6idpy0FwezH72fQcdqunbJp7GJVm8j94atsTOqCeuNvc3PzH3m',
-            'salt' => 'a227383075861e775d0af6281ea05a49',
-            'email' => 'admin@example.com',
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
-            'verified' => 1,
-            'disabled' => 0,
-        ));
-
-        DB::table('role_user')->insert(array(
-            'role_id' => $role_id,
-            'user_id' => $user_id,
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
-        ));
-		$data['warning']='全Verify関連の一括作成が完了しました。';
-		return View::make('setup/index',$data);
-	}
 	
 /*
 |---------------------------------------------

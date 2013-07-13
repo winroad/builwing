@@ -11,8 +11,8 @@ public function getIndex(){
 */
 	//prmissionsテーブルの存在確認
 	public function getVerify(){
- 	if(Schema::hasTable('permissions')){
-		$data['warning']='permissionsテーブルが存在しますので、処理を中止します。';
+ 	if(Schema::hasTable('users')){
+		$data['warning']='usersテーブルが存在しますので、処理を中止します。';
 		return View::make('setup/index',$data);
 	}
 		

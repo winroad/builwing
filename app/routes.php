@@ -37,10 +37,34 @@ View::composer('admin/*',function($view){
 });
 
 Route::get('sample',function(){
-	 	//$works=date('Y/m/d H:i:s',time()+172800); 
-	 	$works=mt_rand(0,99999999); 
-	 	//$works=time()+172800; 
-    return dd($works);
+	$roles=DB::table('role_user')
+		->where('role_id','=',2)->lists('user_id');
+	$users=DB::table('users')
+			->whereIn('id',$roles)->get();
+	foreach($users as $user):
+		echo $user->email;
+		echo $user->name.'<br>';
+	endforeach;
+	/*$roles=DB::table('role_user')
+		->where('role_id','=',2)->lists('user_id');
+	$users=DB::table('users')
+			->whereIn('id',$roles)->get();
+	foreach($users as $user):
+		echo $user->email;
+		echo $user->name.'<br>';
+	endforeach;*/
+	//return dd($emails);
+	//$roles=Role::where('id','>',3)->get();
+	//return dd($roles);
+	/*$users=User::with(array('roles'=>function($query){
+			$query->where('name','=','Admin');
+	}))->get();
+	foreach($users as $user):
+		echo $user->name.'<br>';
+	endforeach;
+	/*foreach(Role::with('users')->where('id','>',2)->get() as $role):
+		echo $role->users;
+	endforeach;*/
 });
 
 Form::macro('myField',function(){

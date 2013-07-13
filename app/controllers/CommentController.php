@@ -138,7 +138,7 @@ class CommentController extends BaseController{
 				$id=Comment::find($id)->message_id;
 				//return dd($id);
 				//削除後に明細ページへ移動
-				return Redirect::to('message/view/'.$id);
+				return Redirect::to('comment/view/'.$id);
 		}
 		//配列の数だけオブジェクトを取得
 		foreach($comments as $key=>$value):

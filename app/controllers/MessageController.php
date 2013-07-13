@@ -38,6 +38,7 @@ class MessageController extends BaseController{
 				//->orWhereIn('role_id',$roles->id
 		//$message=Message::own()->paginate();
 		$data['messages']=(count($messages) != 0) ? $messages : null;
+		//return dd($data['messages']);
 		return View::make('message/index',$data);
 	}	
 	
@@ -50,14 +51,17 @@ class MessageController extends BaseController{
 		if($recipient=='user'){
 			$recipi=User::all()->lists('name','id');
 			$data['user']=array_except($recipi,array(1));
+			$url='/user';
 		}
 		if($recipient=='role'){
 			$role=Role::all()->lists('name','id');
 			$data['role']=array_except($role,array(1));
+			$url='/role';
 		}else{
 			$data['empty']='empty';
+			$url='/create';
 		}
-		return View::make('message/create',$data);
+		return View::make('message'.$url,$data);
 	}
 	
 	public function postCreate(){
@@ -74,12 +78,8 @@ class MessageController extends BaseController{
 					->withInput()
 					->withErrors($val);
 		}
-		//グループ指定が無ければ
-		/*if(!isset($inputs['role_id'])){
-			//Userを指定
-			$inputs['role_id']=6;
-		}*/
 		//データ登録
+		//return dd(Input::all());
 		$message=Message::create($inputs);
 
 	/*****************************************
@@ -147,7 +147,28 @@ class MessageController extends BaseController{
 				$work->message=serialize($merge);
 				$work->save();
 			endforeach;
-		}
+	/*****************************************
+	 * メール送信
+	 *****************************************/
+	 if(Input::get('mail') == 1){
+		 //return dd(Input::all());
+		 //メール送信手続き
+	 		$data['recipient']=Role::find(Input::get('role_id'))->name;
+			$data['sender']=Auth::user()->name;
+			$data['body']=Input::get('body');
+	 		Mail::send('emails.user.message',$data,function($m){
+					$roles=DB::table('role_user')
+						->where('role_id','=',Input::get('role_id'))
+						->lists('user_id');
+					$users=DB::table('users')
+						->whereIn('id',$roles)->get();
+					foreach($users as $user):
+						$m->cc($user->email,$user->name);
+					endforeach;
+				$m->subject(Input::get('subject'));
+				});
+	 }
+	}
 	//トップページへ移動
 	return Redirect::to('message/index');
 	}

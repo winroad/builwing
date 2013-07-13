@@ -15,18 +15,32 @@
 <ul class="right">
 <li class="divider"></li>
 <li class="has-dropdown">
-	<a href="#">メッセージ</a>
+ {{ HTML::link('#','メッセージ') }}
   <ul class="dropdown">
-  	<li>{{ HTML::link('message/unread','未読メッセージ') }}
-  	<li>{{ HTML::link('comment/unread','未読コメント') }}
-  	<li>{{ HTML::link('message','メッセージ一覧') }}
-  	<li>{{ HTML::link('comment/index','コメント一覧') }}
-  	<li>{{ HTML::link('message/create','メッセージ作成') }}
 		<li class="has-dropdown">
-		<a href="#">指定メッセージ</a>
+ 			{{ HTML::link('#','受信') }}
+  	<ul class="dropdown">
+  		<li>{{ HTML::link('message','メッセージ') }}</li>
+  		<li>{{ HTML::link('comment','コメント') }}</li>
+    </ul>
+		<li class="has-dropdown">
+ 			{{ HTML::link('#','送信') }}
+  	<ul class="dropdown">
+  	<li>{{ HTML::link('message/send','メッセージ') }}</li>
+  	<li>{{ HTML::link('comment/send','コメント') }}</li>
+    </ul>
+		<li class="has-dropdown">
+ 			{{ HTML::link('#','未処理') }}
+  	<ul class="dropdown">
+  	<li>{{ HTML::link('message/unread','メッセージ') }}</li>
+  	<li>{{ HTML::link('comment/unread','コメント') }}</li>
+    </ul>
+		<li class="has-dropdown">
+		<a href="#">メッセージ作成</a>
   		<ul class="dropdown">
-  			<li>{{ HTML::link('message/create/user','個人宛てﾒｯｾｰｼﾞ') }}
-  			<li>{{ HTML::link('message/create/role','部署宛ﾒｯｾｰｼﾞ') }}
+  			<li>{{ HTML::link('message/create/user','個人宛てﾒｯｾｰｼﾞ') }}</li>
+  			<li>{{ HTML::link('message/create/role','部署宛ﾒｯｾｰｼﾞ') }}</li>
+  			<li>{{ HTML::link('message/create','全体メッセージ') }}</li>
   		</ul>
 		</li>
   </ul>

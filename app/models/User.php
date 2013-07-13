@@ -5,6 +5,7 @@ use Toddish\Verify\Models\User as VerifyUser;
 
 //class User extends Eloquent implements UserInterface, RemindableInterface {
 class User extends VerifyUser{
+    protected $fillable = array('name', 'password', 'salt', 'email', 'verified', 'deleted_at', 'disabled');
  
 /********************************************
  * リレーションの指定

@@ -10,7 +10,7 @@ class Message extends Eloquent{
 	}
 	//MessageはたくさんのUserに属しています。
 	public function user(){
-	return $this->belongsToMany('User');
+	return $this->belongsTo('User');
 	}
 	
 /*
@@ -20,11 +20,12 @@ class Message extends Eloquent{
 */
 	//ユーザー所有のメッセージ
 	public function scopeOwn($query){
-		/*$user=Auth::user();
-		$role=DB::table('roles')->find(
-		$query=Message::where('recipient_id','=',Auth::user()->id)
-			->orWhere('role_id','<=',Auth::user()->role-first->id)
-	 		->orderBy('created_at','desc');
-		return $query;*/
+		$user=Auth::user();
+		$role=$user->roles->first();
+		$query=Message::where('recipient_id','=',$user->id)
+			->orWhere('role_id','<=',$role->id)
+	 		->orderBy('created_at','desc')
+			->get();
+		return $query;
 	}
 }

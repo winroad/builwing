@@ -1,14 +1,10 @@
 @extends('layouts.f4.user.base')
 @section('content')
-<h2>メッセージ作成</h2>
-{{ Form::open()}}
-@if(isset($user))
-<h4>{{ Form::label('送信先') }}</h4>
-{{ Form::select('recipient_id',$user) }}
-@elseif(isset($role))
-<h4>{{ Form::label('送信先ロール') }}</h4>
-{{ Form::select('role_id',$role) }}
-@endif
+{{ Form::open(array('class'=>'custom'))}}
+<div class="panel">
+<h3>全体メッセージ</h3>
+<p>全体メッセージは、メールを送信するかどうかチェックを入れてください。</p>
+</div>
 <h4>{{ Form::label('タイトル') }}</h4>
 {{ Form::text('subject','',array('style'=>'ime-mode:active')) }}
 	@if($errors->has('subject'))
@@ -24,10 +20,24 @@
   	</div>
 	@endif
   <br>
-@if(!isset($role) and !isset($uer))
+<div class="row">
+	<div class="large-12 columns">
+      <label for="radio1">
+      <input name="radio1" type="radio" id="radio1" style="display:none;>
+      <span class="custom radio checked"></span> メール送信
+      </label>
+      <label for="radio1">
+      <input name="radio1" type="radio" id="radio1" style="display:none;" CHECKED>
+      <span class="custom radio"></span> メール未送信
+      </label>
+	</div>
+</div>
+<div class="row">
+	<div class="small-6 large-centered columns">
+	{{ Form::submit('メッセージ送信',array('class'=>'button')) }}
+	</div>
+</div>
 {{ Form::hidden('role_id',6) }}
-@endif
 {{ Form::hidden('user_id',Auth::user()->id) }}
-{{ Form::submit('送信',array('class'=>'button')) }}
 {{ Form::close() }}
 @stop

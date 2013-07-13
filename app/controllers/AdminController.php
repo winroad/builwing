@@ -117,10 +117,8 @@ class AdminController extends BaseController{
   *  新規作成
 	*******************************/
 	//即時認証
-	if(Input::get('verifide') == 1){
+	if(Input::get('verified') == 1){
 	$role_id=Input::get('role_id');
-	//return dd($role_id);
-	$role_id=isset($role_id) ? $role_id : 8;
 	//return dd($role_id);
 	$user=User::create($inputs);
 	$profile['id']=$user->id;
@@ -133,8 +131,9 @@ class AdminController extends BaseController{
 	$user->save();
 	//ロールの作成
 	$user->roles()->sync(array($role_id));
-	//コントローラアクションへパラメーターを渡し、リダレクト
-	return Redirect::to('admin/user');
+	
+	return View::make('admin/index')
+				->with('warning','ユーザーの即時登録が完了しました');
 	//メール認証手続き
 	}else{
 		//メール送信データの整理

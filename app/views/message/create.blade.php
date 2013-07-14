@@ -2,7 +2,7 @@
 @section('content')
 {{ Form::open(array('class'=>'custom'))}}
 <div class="panel">
-<h3>全体メッセージ</h3>
+<h3>{{ $title }}</h3>
 <p>全体メッセージは、メールを送信するかどうかチェックを入れてください。</p>
 </div>
 <h4>{{ Form::label('タイトル') }}</h4>
@@ -22,14 +22,8 @@
   <br>
 <div class="row">
 	<div class="large-12 columns">
-      <label for="radio1">
-      <input name="radio1" type="radio" id="radio1" style="display:none;>
-      <span class="custom radio checked"></span> メール送信
-      </label>
-      <label for="radio1">
-      <input name="radio1" type="radio" id="radio1" style="display:none;" CHECKED>
-      <span class="custom radio"></span> メール未送信
-      </label>
+      <h5>{{ Form::radio('mail',1,true) }} メール送信</H5>
+      <h5>{{ Form::radio('mail',0) }} メール未送信</h5>
 	</div>
 </div>
 <div class="row">

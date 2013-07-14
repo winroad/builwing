@@ -8,9 +8,8 @@ class Comment extends Eloquent{
 	return $this->belongsTo('Message');
 	}
  
-	//コメントは多くのユーザーに属しています。
+	//コメントはユーザー（送信者）に属しています。
 	public function user(){
-	return $this->belongsToMany('User');
-	}
- 
+	return $this->belongsTo('User');
+	} 
 }

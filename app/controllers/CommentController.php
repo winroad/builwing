@@ -11,20 +11,44 @@ class CommentController extends BaseController{
  //全POSTにcsrfフィルターの適用
  $this->beforeFilter('csrf',array('on'=>'post'));
  }
+ 
+	//ユーザー受信コメント
+	public function own(){
+		$user=Auth::user();
+		$role=$user->roles->first();
+		$query=Comment::where('recipient_id',$user->id)
+			->orWhere('role_id','>=',$role->id)
+	 		->orderBy('created_at','desc');
+		return $query;
+	}
+	//ユーザー送信コメント
+	public function sent(){
+		$user=Auth::user();
+		$query=Comment::where('user_id',$user->id)
+	 		->orderBy('created_at','desc');
+		return $query;
+	}
+ 
 /*
 |----------------------------------------
 | トップページ（コメント一覧）
 |----------------------------------------
 */
- public function getIndex(){
-		//ログインユーザーの全コメントを取得
-	 $comments=Comment::with(array('message'=>function($query){
-		 $user=Auth::user();
-		 $role_id=$user->roles()->pluck('id');
-		 $query->where('recipient_id',$user->id)
-		 			->orWhere('role_id','>=',$role_id)
-					->orderBy('created_at','desc');
-	 }))->paginate();
+	public function getIndex($action=null){
+		//基本情報のセット
+		$user=Auth::user();
+		$role_id=$user->roles()->pluck('id');
+		if($action == 'sent'):
+			//ユーザー送信コメント
+			$comments=$this->sent()->paginate();
+			$data['title']='送信コメント一覧';
+			$data['action']='sent';
+		else:
+			//ユーザー受信コメント
+			$comments=$this->own()->paginate();
+			$data['title']='受信コメント一覧';
+			$data['action']=null;
+		endif;
 		$data['comments']=(count($comments) != 0) ? $comments : null;
 		return View::make('comment/index',$data);
  }
@@ -34,13 +58,13 @@ class CommentController extends BaseController{
 |----------------------------------------
 */
  public function getCreate($id=null){
-	 $data['id']=$id;
+	 $data['message']=Message::find($id);
 	 return View::make('comment/create',$data);
 	}
 	//コメント作成
  public function postCreate(){
-	 $inputs=Input::all('body');
-	 //return dd($inputs);
+	 $inputs=Input::all();
+	 //dd($inputs);
 	 $rules=array('body'=>'required');
 	 $val=Validator::make($inputs,$rules);
 	 //return dd($inputs);
@@ -50,8 +74,6 @@ class CommentController extends BaseController{
 				->withErrors($val);
 		}
 		$inputs['user_id']=Auth::user()->id;
-		//$comment=Comment::create($inputs);
-		//$message=Message::find(Input::get('message_id'));
 		$comment=Comment::create($inputs);
 		$message=$comment->message;
 	
@@ -81,15 +103,12 @@ class CommentController extends BaseController{
 		}else{
 			//新コメント
 			$new=array($comment->id);
-			//return dd(Input::all());
-			//指定Roleのユーザーを取得
-			//$role=Role::find($message->role_id);
-			//$users=User::find($role);
-			
-			//指定ロール以上のレベルのユーザーを取得
-			$users=User::with(array('roles'=>function($query){
-				$query->where('level','<',Input::get('role_id'));
-			}))->get();
+			//return dd($new);
+			//指定ロール以上のIDリスト取得
+			$role_id=Role::where('id','<=',Input::get('role_id'))->lists('id');
+			//dd($role_id);
+			//指定ロール以上のユーザーを取得
+			$users=User::whereIn('id',$role_id)->get();
 			//return dd($users);
 			//ユーザーの数だけ繰り返し
 			foreach($users as $user):
@@ -116,7 +135,7 @@ class CommentController extends BaseController{
 	public function getUnread($id=null,$key=null){
 		//worksから未読コメントの配列を取得
 		$comments=Work::order('comment');
-		//return dd($comment);
+		//return dd($comments)->lists('id');
 		//未読コメントがなければ
 		if(!isset($comments) or count($comments) ==0 ){
 			return View::make('comment/unread')
@@ -135,10 +154,11 @@ class CommentController extends BaseController{
 				$work=Work::find(Auth::user()->id);
 				$work->comment=$comment;
 				$work->save();
-				$id=Comment::find($id)->message_id;
+				//$id=Comment::find($id)->message_id;
 				//return dd($id);
 				//削除後に明細ページへ移動
-				return Redirect::to('comment/view/'.$id);
+				$data['comments']=Comment::find($id);
+				return View::make('comment/view',$data);
 		}
 		//配列の数だけオブジェクトを取得
 		foreach($comments as $key=>$value):
@@ -158,5 +178,28 @@ class CommentController extends BaseController{
 		return View::make('comment/view',$data);
 	}
 	return View::make('comment/view');
+	}
+	
+/*
+|------------------------------------
+| コメント検索
+|------------------------------------
+*/
+	public function postSearch(){
+		$input=Input::get('search');
+		$action=Input::get('action');
+		$comments=Comment::where('body','LIKE','%'.$input.'%')
+			->orderBy('created_at','desc');
+		if($action == 'sent'):
+			$data['comments']=$comments->where('user_id',Auth::user()->id)
+				->paginate();
+			$data['title']='送信コメント検索';
+			$data['action']='sent';
+		else:
+			$data['comments']=$comments->paginate();
+			$data['title']='受信コメント検索';
+			$data['action']=null;
+		endif;
+		return View::make('comment/index',$data);
 	}
 }

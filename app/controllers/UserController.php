@@ -12,7 +12,7 @@ class UserController extends BaseController{
  //全POSTにcsrfフィルターの適用
  $this->beforeFilter('csrf',array('on'=>'post'));
  }
- //カラム内の配列の取得
+ //worksテーブルカラム内の配列の取得
  private function order($column){
 	 $work=Work::find(Auth::user()->id);
 	 $order=isset($work->$column) ? unserialize($work->$column) : null;

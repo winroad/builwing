@@ -11,9 +11,24 @@ class MessageController extends BaseController{
  //全POSTにcsrfフィルターの適用
  $this->beforeFilter('csrf',array('on'=>'post'));
  }
- 
+	//ユーザー受信メッセージ
+	public function own(){
+		$user=Auth::user();
+		$role_id=$user->roles->first()->get();
+		$query=Message::where('recipient_id',$user->id)
+			->orWhere('role_id','>=',$role_id)
+	 		->orderBy('created_at','desc');
+		return $query;
+	}
+	//ユーザー送信メッセージ
+	public function sent(){
+		$user=Auth::user();
+		$query=Message::where('user_id',$user->id)
+	 		->orderBy('created_at','desc');
+		return $query;
+	}
  //カラム内の配列の取得
- private function order($column){
+ public function order($column){
 	 $work=Work::find(Auth::user()->id);
 	 $order=count($work->$column == 0) ? unserialize($work->$column) : null;
 		 return $order;
@@ -24,19 +39,19 @@ class MessageController extends BaseController{
 | TOPページ
 |------------------------------------
 */
-	public function getIndex(){
-		//ログインユーザーの全メッセージを取得
-		$user=Auth::user();
-		$role_id=Auth::user()->roles()->pluck('id');
-		//return dd($level);
-		$messages=Message::where('recipient_id',$user->id)
-					->orWhere('role_id','>=',$role_id)
-					->orderBy('created_at','desc')
-					->paginate();
+	public function getIndex($action=null){
+		//dd($this->own());
+		if($action == 'sent'):
+			$messages=$this->sent()->paginate();
+			$data['title']='送信メッセージ一覧';
+			$data['action']='sent';
+		else:
+			//ユーザーの受信メッセージを取得
+			$messages=$this->own()->paginate();
+			$data['title']='受信メッセージ一覧';
+			$data['action']=null;
 		//return dd($messages);
-		//$recipient=Message::where('recipient_id',$user->id)
-				//->orWhereIn('role_id',$roles->id
-		//$message=Message::own()->paginate();
+		endif;
 		$data['messages']=(count($messages) != 0) ? $messages : null;
 		//return dd($data['messages']);
 		return View::make('message/index',$data);
@@ -47,18 +62,19 @@ class MessageController extends BaseController{
 | 新規メッセージ作成
 |------------------------------------
 */
-	public function getCreate($recipient=null){
-		if($recipient=='user'){
+	public function getCreate($action=null){
+		if($action == 'user'){
 			$recipi=User::all()->lists('name','id');
 			$data['user']=array_except($recipi,array(1));
+			$data['title']='個人宛メッセージ';
 			$url='/user';
-		}
-		if($recipient=='role'){
+		}elseif($action == 'role'){
 			$role=Role::all()->lists('name','id');
 			$data['role']=array_except($role,array(1));
+			$data['title']='グループ宛メッセージ';
 			$url='/role';
 		}else{
-			$data['empty']='empty';
+			$data['title']='全体メッセージ';
 			$url='/create';
 		}
 		return View::make('message'.$url,$data);
@@ -120,17 +136,18 @@ class MessageController extends BaseController{
 				$email=$user->email;
 				$name=$user->name;
 				$m->to($email,$name)->subject('Builwing通信');
-				});	 
+				});
 			
 		//Role宛てメッセージなら
 		}else{
 			//新メッセージ
 			$new=array($message->id);
 			//return dd($new);
-			//指定ロール以上のレベルのユーザーを取得
-			$users=User::with(array('roles'=>function($query){
-				$query->where('level','<',Input::get('role_id'));
-			}))->get();
+			//指定ロール以上のIDリスト取得
+			$role_id=Role::where('id','<=',Input::get('role_id'))->lists('id');
+			//dd($role_id);
+			//指定ロール以上のユーザーを取得
+			$users=User::whereIn('id',$role_id)->get();
 			//return dd($users);
 			//ユーザーの数だけ繰り返し
 			foreach($users as $user):
@@ -214,18 +231,23 @@ class MessageController extends BaseController{
 | 明細ページ
 |------------------------------------
 */
- public function getView($id=null){
-	 $data['messages']=Message::find($id);
-	 //$com=isset($mes->comment) ? unserialize($mes->comment) : null;
-	 //return dd($com);
-	 //$data=array('message'=>$mes,'comment'=>$com);
+	public function getView($id=null){
+		$own=$this->own()->where('id',$id)->get();
+	 	if($own->count() == 0 ):
+			$data['title']='指定のメッセージはありません';
+			$data['action']=null;
+	 		return View::make('message/index',$data);
+	 endif;
+			$data['messages']=Message::find($id);
+	 		$data['title']='メッセージ明細';
+			
 	 return View::make('message/view',$data);
  }
 /*
 |------------------------------------
 | コメントページ
 |------------------------------------
-*/
+*
 	public function getComment($action=null,$id=null){
 		//コメント作成
 		if($action=='creaet'){
@@ -275,7 +297,7 @@ class MessageController extends BaseController{
 			
 			/***************************************
 			 *  worksテーブルの未読コメントを登録
-			 ***************************************/
+			 ***************************************
 			 //メッセージの受信者を取得
 			 if(isset($message->recipient_id)){
 				 $users=User::where('user_id',$message->recipient_id)->get();
@@ -303,7 +325,7 @@ class MessageController extends BaseController{
 		//ログインユーザーの全メッセージを取得
 		$data['messages']=Message::own()->paginate();
 		return View::make('message/index',$data);
-	}	
+	}*/
 	
 /*
 |------------------------------------
@@ -312,11 +334,21 @@ class MessageController extends BaseController{
 */
 	public function postSearch(){
 		$input=Input::get('search');
-		$data['messages']=Message::where('subject','LIKE','%'.$input.'%')
+		$action=Input::get('action');
+		$messages=Message::where('subject','LIKE','%'.$input.'%')
 			->orWhere('body','LIKE','%'.$input.'%')
-			->orWhere('comment','LIKE','%'.$input.'%')
-			->orderBy('created_at','desc')
-			->paginate();
+			->orderBy('created_at','desc');
+		if($action == 'sent'):
+			$data['messages']=$messages->where('user_id',Auth::user()->id)
+				->paginate();
+			$data['title']='送信メッセージ検索';
+			$data['action']='sent';
+		else:
+			$data['messages']=$messages->paginate();
+			$data['title']='受信メッセージ検索';
+			$data['action']=null;
+		endif;
 		return View::make('message/index',$data);
 	}
+
 }

@@ -1,7 +1,7 @@
 <?php
 class Profile extends Eloquent{
  	protected $softDelete=true;
- 	protected $guarded=array('deleted_at');
+ 	protected $guarded=array('created_at','updated_at');
 /*
 |--------------------------------------------
 | リレーションの指定

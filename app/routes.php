@@ -37,7 +37,9 @@ View::composer('admin/*',function($view){
 });
 
 Route::get('sample',function(){
-	$roles=DB::table('role_user')
+	$messages=Work::order();
+	return dd($messages);
+	/*$roles=DB::table('role_user')
 		->where('role_id','=',2)->lists('user_id');
 	$users=DB::table('users')
 			->whereIn('id',$roles)->get();

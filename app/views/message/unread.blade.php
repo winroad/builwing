@@ -6,7 +6,7 @@
   <a href="#" class="close">&times;</a>
   </div>
 @else
-<h2>未読メッセージ</h2>
+<h4>未読メッセージ</h4>
 @endif
 @if(isset($message))
 <table width="100%" border="0">

@@ -1,8 +1,10 @@
 @extends('layouts.f4.user.base')
 @section('content')
 <div class='row'>
-<div class='large-8 column'>	
-<h4>受信メッセージ一覧</h4>
+<div class='large-8 column'>
+@if(isset($title))
+ <h4>{{ $title }}</h4>
+@endif
 </div>
 <div class='large-4 column'>
 <div class='row collapse'>
@@ -13,6 +15,7 @@
   <div class="large-3 small-6 columns">
   {{ Form::submit('検索',array('class'=>'button small')) }}
   </div>
+  {{ Form::hidden('action',$action) }}
   {{ Form::close() }}
   </div>
 </div>
@@ -30,10 +33,7 @@
     <td width="12%">{{ User::find($message->user_id)->name }}</td>
     <td width="12%">{{ date('n月j日',strtotime($message->created_at)) }}</td>
   </tr>
-<!--  <tr>
-    <td colspan="3">{{ $message->body }}</td>
-  </tr>
--->@endforeach
+@endforeach
 </table>
 <h5>{{ $messages->links() }}</h5>
 @endif

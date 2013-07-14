@@ -9,6 +9,8 @@
 </div>
 @endif
 {{ Form::submit('作成',array('class'=>'button')) }}
-{{ Form::hidden('message_id',$id) }}
+{{ Form::hidden('message_id',$message->id) }}
+{{ Form::hidden('recipient_id',$message->recipient_id) }}
+{{ Form::hidden('role_id',$message->role_id) }}
 {{ Form::close() }}
 @stop

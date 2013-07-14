@@ -381,6 +381,40 @@ public function getCompany(){
 	
 /*
 |---------------------------------------------
+|	messagesテーブルの作成
+|---------------------------------------------
+*/
+	public function getMessages(){
+ 	if(Schema::hasTable('messages')){
+		$data['warning']='messagesテーブルが存在しますので、処理を中止します。';
+		return View::make('setup/index',$data);
+	}
+ 	Schema::create('messages',function($table){
+ 		$table->increments('id');
+		//送信者ID
+		$table->integer('user_id');
+		//受信者ID（個人宛ポストの場合）
+		$table->integer('recipient_id')->nullable();
+		//受信RoleID
+		$table->integer('role_id')->nullable();
+		//タイトル
+		$table->string('subject',200);
+		//メッセージ内容
+		$table->text('body');
+		//メールチェック用
+    $table->boolean('mail')->default(0);
+		//コメント
+		$table->text('comment')->nullable;
+ 		//created_atとupdated_atの同時作成
+ 		$table->timestamps();
+		//ソフトデリート用
+		$table->softDeletes();	
+ 	});
+		$data['warning']='messagesテーブルを作成しました。';
+		return View::make('setup/index',$data);
+	}	
+/*
+|---------------------------------------------
 |	comments(コメント)テーブルの作成
 |---------------------------------------------
 */
@@ -391,8 +425,10 @@ public function getCompany(){
 	}
  	Schema::create('comments',function($table){
  		$table->increments('id');
+		//メッセージID
+		$table->integer('message_id');
 		//投稿者ID
-		$table->integer('submitter_id');
+		$table->integer('user-_id');
 		//受信者ID（個人宛ポストの場合）
 		$table->integer('recipient_id')->nullable();
 		//RoleID（Role宛ポストの場合）
@@ -406,8 +442,7 @@ public function getCompany(){
  	});
 		$data['warning']='commentsテーブルを作成しました。';
 		return View::make('setup/index',$data);
-	}
-	
+	}	
 /*
 |---------------------------------------------
 |	works(労務管理）テーブルの作成
@@ -420,10 +455,10 @@ public function getCompany(){
 	}
  	Schema::create('works',function($table){
  		$table->increments('id');
-		//ユーザーID
-		//$table->integer('user_id');
 		//未読メッセージの配列（シリアライズ）
 		$table->text('message')->nullable();
+		//未読メッセージの配列（シリアライズ）
+		$table->text('comment')->nullable();
 		//未処理TODOの配列（シリアライズ）
 		$table->text('todo')->nullable();
  		//created_atとupdated_atの同時作成
@@ -469,38 +504,6 @@ public function getCompany(){
 		$table->softDeletes();	
  	});
 		$data['warning']='todoテーブルを作成しました。';
-		return View::make('setup/index',$data);
-	}
-/*
-|---------------------------------------------
-|	messagesテーブルの作成
-|---------------------------------------------
-*/
-	public function getMessages(){
- 	if(Schema::hasTable('messages')){
-		$data['warning']='messagesテーブルが存在しますので、処理を中止します。';
-		return View::make('setup/index',$data);
-	}
- 	Schema::create('messages',function($table){
- 		$table->increments('id');
-		//送信者ID
-		$table->integer('user_id');
-		//受信者ID（個人宛ポストの場合）
-		$table->integer('recipient_id')->nullable();
-		//受信RoleID
-		$table->integer('group_id')->nullable();
-		//タイトル
-		$table->string('subject',200);
-		//メッセージ内容
-		$table->text('body');
-		//コメント
-		$table->text('comment')->nullable;
- 		//created_atとupdated_atの同時作成
- 		$table->timestamps();
-		//ソフトデリート用
-		$table->softDeletes();	
- 	});
-		$data['warning']='messagesテーブルを作成しました。';
 		return View::make('setup/index',$data);
 	}
 

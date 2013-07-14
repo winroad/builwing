@@ -2,7 +2,7 @@
 @section('content')
 <div class='row'>
 <div class='large-8 column'>	
-<h4>受信コメント一覧</h4>
+<h4>{{ $title }}</h4>
 </div>
 <div class='large-4 column'>
 <div class='row collapse'>
@@ -13,6 +13,7 @@
   <div class="large-3 small-6 columns">
   {{ Form::submit('検索',array('class'=>'button small')) }}
   </div>
+  {{ Form::hidden('action',$action) }}
   {{ Form::close() }}
 </div>
 </div>

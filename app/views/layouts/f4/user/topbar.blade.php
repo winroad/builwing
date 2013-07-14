@@ -26,8 +26,8 @@
 		<li class="has-dropdown">
  			{{ HTML::link('#','送信') }}
   	<ul class="dropdown">
-  	<li>{{ HTML::link('message/send','メッセージ') }}</li>
-  	<li>{{ HTML::link('comment/send','コメント') }}</li>
+  	<li>{{ HTML::link('message/index/sent','メッセージ') }}</li>
+  	<li>{{ HTML::link('comment/index/sent','コメント') }}</li>
     </ul>
 		<li class="has-dropdown">
  			{{ HTML::link('#','未処理') }}

@@ -19,30 +19,12 @@
 
 @yield('content')
 
-
-    <hr>
-
-    <div class="panel">
-      <h3>Get going!</h3>
-      <h5 class="subheader">Now that you understand the gist of what Foundation is and how it works, it's time to start a project! We've got two different ways for you to build projects with Foundation, a Compass Gem using Scss or a with plain CSS.</h5>
-      <a href="./sass.html" class="button">Using the Gem</a></li>
-      <a href="http://foundation.zurb.com/migration.php" class="button secondary">Quickstart with CSS</a></li>
-    </div>
     
   </div>
-  
+  <div class="large-3 pull-9 columns">
 @section('sidebar')
 {{ View::make('layouts.f4.user.sidebar') }}
 @show
-
-<p><a href="http://foundation.zurb.com/download.php" class="button expand" style="margin-bottom: 0;">Download Foundation 4</a></p>
-
-<div class="jobs hide-for-small">
-  <h5>Awesome product jobs:</h5>
-  <script type="text/javascript" src="http://www.zurb.com/jobs/widgets/jobs.js?limit=3&variation=foundation-sidebar"></script>
-  <a id="via" href="http://zurbjobs.com">via&nbsp;<span class="jobs-link">ZURBjobs</span></a>
-</div>
-
   </div>
 </div>
 

@@ -28,11 +28,11 @@ AdminのViewページです
   </tr>
   <tr>
     <th scope="row">アクティベート</th>
-    <td>{{ $user->activate> 0 ? '認証済み' :'未認証' }}</td>
+    <td>{{ $user->verified > 0 ? '認証済み' :'未認証' }}</td>
   </tr>
   <tr>
     <th scope="row">ロール（権限）</th>
-    <td>{{ isset($user->group->name) ? $user->group->name :'' }}</td>
+    <td>{{ isset($user->roles->name) ? $user->roles->name :'' }}</td>
   </tr>
   <tr>
     <th scope="row">所属先</th>

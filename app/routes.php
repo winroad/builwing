@@ -30,46 +30,4 @@ Route::controller('group','GroupController');
 Route::controller('login','LoginController');
 Route::controller('role','RoleController');
 Route::controller('permission','PermissionController');
-//Route::resource('admin','AdminController');
-
-View::composer('admin/*',function($view){
-	$view->with('count',User::count());
-});
-
-Route::get('sample',function(){
-	$messages=Work::order();
-	return dd($messages);
-	/*$roles=DB::table('role_user')
-		->where('role_id','=',2)->lists('user_id');
-	$users=DB::table('users')
-			->whereIn('id',$roles)->get();
-	foreach($users as $user):
-		echo $user->email;
-		echo $user->name.'<br>';
-	endforeach;
-	/*$roles=DB::table('role_user')
-		->where('role_id','=',2)->lists('user_id');
-	$users=DB::table('users')
-			->whereIn('id',$roles)->get();
-	foreach($users as $user):
-		echo $user->email;
-		echo $user->name.'<br>';
-	endforeach;*/
-	//return dd($emails);
-	//$roles=Role::where('id','>',3)->get();
-	//return dd($roles);
-	/*$users=User::with(array('roles'=>function($query){
-			$query->where('name','=','Admin');
-	}))->get();
-	foreach($users as $user):
-		echo $user->name.'<br>';
-	endforeach;
-	/*foreach(Role::with('users')->where('id','>',2)->get() as $role):
-		echo $role->users;
-	endforeach;*/
-});
-
-Form::macro('myField',function(){
-	return '<h1>Formマクロのテスト</h1>';
-});
 

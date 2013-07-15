@@ -2,39 +2,40 @@
 @section('content')
 <h3>コメント詳細</h3>
 <ul class='button-group right'>
-	<li>{{ HTML::link('message/index','一覧',array('class'=>'button')) }}</li>
-	<li>{{ HTML::link('message/unread','未読',array('class'=>'button')) }}</li>
+	<li>{{ HTML::link('comment','受信',array('class'=>'button')) }}</li>
+	<li>{{ HTML::link('comment/index/sent','送信',array('class'=>'button')) }}</li>
 </ul>
-@if(isset($comments))
+@if(isset($comment))
 <table width="100%" border="0">
   <tr>
     <th colspan="2">コメント詳細</th>
   </tr>
   <tr>
     <th width="20%" scope="row">内容</th>
-    <td width="77%">{{ $comments->body }}</td>
+    <td width="77%">{{ $comment->body }}</td>
   </tr>
   <tr>
     <th scope="row">送信者</th>
-    <td>{{ User::find($comments->message->user_id)->name }}</td>
+    <td>{{ User::find($comment->user_id)->name }}</td>
   </tr>
   @if(isset($comment->recipient_id))
   <tr>
     <th scope="row">送信先</th>
     <td>
-    {{ isset($comments->recipient_id) ? User::find($messages->recipient_id)->name : null }}
+    {{ isset($comment->recipient_id) ? User::find($comment->recipient_id)->name : null }}
     </td>
   </tr>
-  @endif
-  @if(isset($comment->role_id))
+  @else
   <tr>
     <th scope="row">送信先</th>
-    <td>{{ isset($comments->role_id) ? Role::find($comments->role_id)->name : null }}</td>
+    <td>
+    {{ Win::ser($comment->role_name,'　') }}
+    </td>
   </tr>
   @endif
   <tr>
     <th scope="row">作成日</th>
-    <td>{{ $comments->created_at }}</td>
+    <td>{{ $comment->created_at }}</td>
   </tr>
 </table>
 <table width="100%" border="0">
@@ -43,39 +44,42 @@
   </tr>
   <tr>
     <th width="20%" scope="row">タイトル</th>
-    <td widht="77%">{{ $comments->message->subject }}</td>
+    <td widht="77%">{{ $message->subject }}</td>
   </tr>
   <tr>
     <th scope="row">内容</th>
-    <td>{{ $comments->message->body }}</td>
+    <td>{{ $message->body }}</td>
   </tr>  
   <tr>
     <th scope="row">送信者</th>
-    <td>{{ User::find($comments->user_id)->name }}</td>
+    <td>{{ User::find($message->user_id)->name }}</td>
   </tr>
-  @if(isset($comments->message->recipient_id))
+  @if(isset($message->recipient_id))
   <tr>
     <th scope="row">送信先</th>
-    <td>{{ isset($comments->message->recipient_id) ? Role::find($comments->message->recipient_id)->name : null }}</td>
+    <td>{{ isset($message->recipient_id) ? Role::find($message->recipient_id)->name : null }}</td>
   </tr>
-  @endif
-  @if(isset($comments->message->role_id))
+  @else
   <tr>
     <th scope="row">送信先</th>
-    <td>{{ (isset($comments->message->role_id) ? Role::find($comments->message->role_id)->name : null).'　全員へ' }}</td>
+    <td>{{ Win::ser($comment->message->role_name,'、') }}</td>
   </tr>
   @endif
   <tr>
     <th scope="row">作成日</th>
-    <td>{{ $comments->message->created_at }}</td>
+    <td>{{ $comment->message->created_at }}</td>
   </tr>
   <tr>
     <th scope="row">更新日</th>
-    <td>{{ $comments->message->updated_at }}</td>
+    <td>{{ $comment->message->updated_at }}</td>
   </tr>
   <tr>
-    <th scope="row">&nbsp;</th>
-    <td>&nbsp;</td>
+    <th scope="row">コメント一覧</th>
+    <td>
+  	@foreach($comments as $com)
+    {{ $com->body }}<br>
+    @endforeach
+    </td>
   </tr>
   <tr>
     <th scope="row">&nbsp;</th>

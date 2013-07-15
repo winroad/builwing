@@ -15,11 +15,17 @@ class CommentController extends BaseController{
 	//ユーザー受信コメント
 	public function own(){
 		$user=Auth::user();
-		$role=$user->roles->first();
+		$role_id=DB::table('role_user')
+					->where('user_id',$user->id)
+					->lists('role_id');
+		$role_names=Role::whereIn('id',$role_id)->lists('name');
 		$query=Comment::where('recipient_id',$user->id)
-			->orWhere('role_id','>=',$role->id)
-	 		->orderBy('created_at','desc');
-		return $query;
+	 			->orderBy('created_at','desc');
+			foreach($role_names as $role_name):
+				$query->orWhere('role_name','LIKE',"%$role_name%");
+			endforeach;
+				$query->where('user_id','<>',$user->id);
+		return $query;		
 	}
 	//ユーザー送信コメント
 	public function sent(){
@@ -35,9 +41,6 @@ class CommentController extends BaseController{
 |----------------------------------------
 */
 	public function getIndex($action=null){
-		//基本情報のセット
-		$user=Auth::user();
-		$role_id=$user->roles()->pluck('id');
 		if($action == 'sent'):
 			//ユーザー送信コメント
 			$comments=$this->sent()->paginate();
@@ -64,10 +67,9 @@ class CommentController extends BaseController{
 	//コメント作成
  public function postCreate(){
 	 $inputs=Input::all();
-	 //dd($inputs);
 	 $rules=array('body'=>'required');
 	 $val=Validator::make($inputs,$rules);
-	 //return dd($inputs);
+		//dd($inputs);
 	 if($val->fails()){
 		 return Redirect::back()
 		 		->withInput()
@@ -88,33 +90,39 @@ class CommentController extends BaseController{
 			$work=Work::find($message->recipient_id);
 			//旧コメント
 			$old=isset($work->comment) ? unserialize($work->comment) : array();
-			//return dd($old);
+			//dd($old);
 			//新コメント
 			$new=array($comment->id);
-			//return dd($new);
+			//dd($new);
 			//配列の併合
 			$merge=isset($old) ? array_merge($old,$new) : $new;
 			//登録データの保存
-			//return dd(serialize($merge));
+			//dd(serialize($merge));
 			$work->comment=serialize($merge);
-			//return dd($work->comment);
+			//dd($work->comment);
 			$work->save();
-		//Role宛てメッセージなら
+		
+		//Role宛てメッセージのコメントなら
 		}else{
 			//新コメント
 			$new=array($comment->id);
-			//return dd($new);
-			//指定ロール以上のIDリスト取得
-			$role_id=Role::where('id','<=',Input::get('role_id'))->lists('id');
+			//dd($new);
+			//ロールの名前リスト取得
+			$role_name=unserialize($comment->role_name);
+			//ロールのIDリスト取得
+			$role_id=Role::whereIn('name',$role_name)->lists('id');
 			//dd($role_id);
-			//指定ロール以上のユーザーを取得
-			$users=User::whereIn('id',$role_id)->get();
-			//return dd($users);
+			//指定ロールのユーザーを取得
+			$user_id=DB::table('role_user')
+					->whereIn('role_id',$role_id)->lists('user_id');
+			//dd($user_id);
+			$users=User::whereIn('id',$user_id)->get();
+			//dd($users);
 			//ユーザーの数だけ繰り返し
 			foreach($users as $user):
 				//旧メッセージの取得
 				$work=Work::find($user->id);
-				//return dd($user->id);
+				//dd($user->id);
 				$old=isset($work->comment) ? unserialize($work->comment) : array();
 				//配列の併合
 				$merge=isset($old) ? array_merge($old,$new) : $new;
@@ -135,7 +143,7 @@ class CommentController extends BaseController{
 	public function getUnread($id=null,$key=null){
 		//worksから未読コメントの配列を取得
 		$comments=Work::order('comment');
-		//return dd($comments)->lists('id');
+		//dd($comments)->lists('id');
 		//未読コメントがなければ
 		if(!isset($comments) or count($comments) ==0 ){
 			return View::make('comment/unread')
@@ -149,21 +157,24 @@ class CommentController extends BaseController{
 					array_pull($unread,$key);
 					//配列のキーを前に詰める
 					$unread=array_values($unread);
-					//return dd($unread);
+					//dd($unread);
 				$comment=serialize($unread);
 				$work=Work::find(Auth::user()->id);
 				$work->comment=$comment;
 				$work->save();
 				//$id=Comment::find($id)->message_id;
-				//return dd($id);
+				//dd($id);
 				//削除後に明細ページへ移動
-				$data['comments']=Comment::find($id);
+			$com=Comment::find($id);
+			$mes=Message::find($com->message_id);
+			$coms=Comment::where('message_id',$com->message_id)->get();
+			$data=array('comment'=>$com,'message'=>$mes,'comments'=>$coms);
 				return View::make('comment/view',$data);
 		}
 		//配列の数だけオブジェクトを取得
 		foreach($comments as $key=>$value):
 			$data['comments'][]=Comment::find($value);
-			//return dd(Comment::find($value));
+			//dd(Comment::find($value));
 		endforeach;
 		return View::make('comment/unread',$data);
 	}
@@ -174,7 +185,10 @@ class CommentController extends BaseController{
 */
 	public function getView($id=null){
 		if(isset($id)){
-			$data['comments']=Comment::find($id);
+			$com=Comment::find($id);
+			$mes=Message::find($com->message_id);
+			$coms=Comment::where('message_id',$com->message_id)->get();
+			$data=array('comment'=>$com,'message'=>$mes,'comments'=>$coms);
 		return View::make('comment/view',$data);
 	}
 	return View::make('comment/view');
@@ -191,12 +205,15 @@ class CommentController extends BaseController{
 		$comments=Comment::where('body','LIKE','%'.$input.'%')
 			->orderBy('created_at','desc');
 		if($action == 'sent'):
-			$data['comments']=$comments->where('user_id',Auth::user()->id)
-				->paginate();
+			$data['comments']=$comments
+						->where('user_id',Auth::user()->id)
+						->paginate();
 			$data['title']='送信コメント検索';
 			$data['action']='sent';
 		else:
-			$data['comments']=$comments->paginate();
+			$data['comments']=$comments
+						->where('role_name','LIKE',"%$input%")
+						->paginate();
 			$data['title']='受信コメント検索';
 			$data['action']=null;
 		endif;

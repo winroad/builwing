@@ -11,24 +11,31 @@ class MessageController extends BaseController{
  //全POSTにcsrfフィルターの適用
  $this->beforeFilter('csrf',array('on'=>'post'));
  }
+ 
 	//ユーザー受信メッセージ
-	public function own(){
+	protected function own(){
 		$user=Auth::user();
-		$role_id=$user->roles->first()->get();
+		$role_id=DB::table('role_user')
+					->where('user_id',$user->id)
+					->lists('role_id');
+		$role_names=Role::whereIn('id',$role_id)->lists('name');
 		$query=Message::where('recipient_id',$user->id)
-			->orWhere('role_id','>=',$role_id)
-	 		->orderBy('created_at','desc');
+	 			->orderBy('created_at','desc');
+			foreach($role_names as $role_name):
+				$query->orWhere('role_name','LIKE',"%$role_name%");
+			endforeach;
+				$query->where('user_id','<>',$user->id);
 		return $query;
 	}
 	//ユーザー送信メッセージ
-	public function sent(){
+	protected function sent(){
 		$user=Auth::user();
 		$query=Message::where('user_id',$user->id)
 	 		->orderBy('created_at','desc');
 		return $query;
 	}
  //カラム内の配列の取得
- public function order($column){
+ protected function order($column){
 	 $work=Work::find(Auth::user()->id);
 	 $order=count($work->$column == 0) ? unserialize($work->$column) : null;
 		 return $order;
@@ -40,7 +47,6 @@ class MessageController extends BaseController{
 |------------------------------------
 */
 	public function getIndex($action=null){
-		//dd($this->own());
 		if($action == 'sent'):
 			$messages=$this->sent()->paginate();
 			$data['title']='送信メッセージ一覧';
@@ -50,16 +56,14 @@ class MessageController extends BaseController{
 			$messages=$this->own()->paginate();
 			$data['title']='受信メッセージ一覧';
 			$data['action']=null;
-		//return dd($messages);
 		endif;
 		$data['messages']=(count($messages) != 0) ? $messages : null;
-		//return dd($data['messages']);
 		return View::make('message/index',$data);
 	}	
 	
 /*
 |------------------------------------
-| 新規メッセージ作成
+| 新規メッセージ作成View
 |------------------------------------
 */
 	public function getCreate($action=null){
@@ -69,20 +73,27 @@ class MessageController extends BaseController{
 			$data['title']='個人宛メッセージ';
 			$url='/user';
 		}elseif($action == 'role'){
-			$role=Role::all()->lists('name','id');
-			$data['role']=array_except($role,array(1));
+			$roles=Role::all()->lists('name','id');
+			$data['roles']=array_except($roles,array(1));
 			$data['title']='グループ宛メッセージ';
 			$url='/role';
 		}else{
+			$roles=Role::all()->lists('name','id');
+			$data['roles']=array_except($roles,array(1));
 			$data['title']='全体メッセージ';
 			$url='/create';
 		}
 		return View::make('message'.$url,$data);
 	}
 	
+/*
+|------------------------------------
+| 新規メッセージ作成POST処理
+|------------------------------------
+*/
+
 	public function postCreate(){
 		$inputs=Input::all();
-		//return dd($inputs);
 		$rules=array(
 	 			'subject'=>'required',
 	 			'body'=>'required',
@@ -95,7 +106,9 @@ class MessageController extends BaseController{
 					->withErrors($val);
 		}
 		//データ登録
-		//return dd(Input::all());
+		$role_name=Input::get('role_name');
+		$role_name=isset($role_name) ? serialize($role_name) : null;
+		$inputs['role_name']=$role_name;
 		$message=Message::create($inputs);
 
 	/*****************************************
@@ -103,30 +116,25 @@ class MessageController extends BaseController{
 	 * worksテーブルのmessage項目に配列保存
 	 *****************************************/
 		
-		//return dd(Input::all());
 		$recipient_id=Input::get('recipient_id');
-		//return dd($recipient_id);
 		//個人宛メッセージなら
 		if(isset($inputs['recipient_id'])){
 			//受信メッセージの整理
 			$work=Work::find($recipient_id);
-			//return dd($work);
 			//旧メッセージ
 			$old=isset($work->message) ? unserialize($work->message) : array();
-			//return dd($old);
 			//新メッセージ
 			$new=array($message->id);
-			//return dd($new);
 			//配列の併合
 			$merge=!isset($old) ? array_merge($old,$new) : $new;
 			//登録データの保存
-			//return dd($merge);
 			$work->message=serialize($merge);
 			$work->save();
+			
 	/*****************************************
 	 * メール送信
 	 *****************************************/
-	 //return dd(Input::all());
+	 
 	 		$data['recipient']=User::find($recipient_id)->name;
 			$data['sender']=Auth::user()->name;
 			$data['title']=Input::get('subject');
@@ -142,24 +150,21 @@ class MessageController extends BaseController{
 		}else{
 			//新メッセージ
 			$new=array($message->id);
-			//return dd($new);
-			//指定ロール以上のIDリスト取得
-			$role_id=Role::where('id','<=',Input::get('role_id'))->lists('id');
-			//dd($role_id);
-			//指定ロール以上のユーザーを取得
-			$users=User::whereIn('id',$role_id)->get();
-			//return dd($users);
+			//指定ロールIDを取得
+			$role_id=Role::whereIn('name',Input::get('role_name'))->lists('id');
+			//指定ユーザーIDを取得
+			$user_id=DB::table('role_user')
+					->whereIn('role_id',$role_id)
+					->lists('user_id');
+			//指定ユーザーを取得
+			$users=User::whereIn('id',$user_id)->get();
 			//ユーザーの数だけ繰り返し
 			foreach($users as $user):
-			//return dd($user->id);
 				//旧メッセージの取得
 				$work=Work::find($user->id);
-				//return dd($work);
 				$old=isset($work->message) ? unserialize($work->message) : array();
-				//return dd($old);
 				//配列の併合
 				$merge=isset($old) ? array_merge($old,$new) : $new;
-				//return dd($merge);
 				//登録データの保存
 				$work->message=serialize($merge);
 				$work->save();
@@ -168,17 +173,22 @@ class MessageController extends BaseController{
 	 * メール送信
 	 *****************************************/
 	 if(Input::get('mail') == 1){
-		 //return dd(Input::all());
 		 //メール送信手続き
-	 		$data['recipient']=Role::find(Input::get('role_id'))->name;
+	 		$data['recipient']=Role::find(Input::get('role_name'))->name;
 			$data['sender']=Auth::user()->name;
 			$data['body']=Input::get('body');
 	 		Mail::send('emails.user.message',$data,function($m){
-					$roles=DB::table('role_user')
-						->where('role_id','=',Input::get('role_id'))
-						->lists('user_id');
-					$users=DB::table('users')
-						->whereIn('id',$roles)->get();
+					//指定ロールIDを取得
+					$role_id=Role::whereIn('name',Input::get('role_name'))
+								->lists('id');
+					//指定ユーザーIDを取得
+					$user_id=DB::table('role_user')
+								->whereIn('role_id',$role_id)
+								->lists('user_id');
+					//指定ユーザーを取得
+					$users=User::whereIn('id',$user_id)
+								->get();
+					//ユーザーの数だけ繰り返し
 					foreach($users as $user):
 						$m->cc($user->email,$user->name);
 					endforeach;
@@ -199,7 +209,7 @@ class MessageController extends BaseController{
 		$work=Work::find(Auth::user()->id);
 		//未読メッセージのID配列取得
 		$message=$this->order('message');
-		//return dd($message);
+		//dd($message);
 		//未読メッセージがなければ
 		if(count($message)== 0 or $message == null){
 			return View::make('message/unread')
@@ -207,7 +217,6 @@ class MessageController extends BaseController{
 		}
 		//指定IDが未読メッセージの中にあれば
 		if(isset($id) and in_array($id,unserialize($work->message))){
-			//return $key;
 				//未読メッセージIDの配列を取得
 				$unread=unserialize($work->message);
 					//未読メッセージを削除
@@ -222,7 +231,7 @@ class MessageController extends BaseController{
 		}
 		//配列の数だけオブジェクトを取得
 		foreach($message as $key=>$value):
-			$data['message'][]=Message::find($value);
+			$data['message'][$key]=Message::find($value);
 		endforeach;
 		return View::make('message/unread',$data);
 	}
@@ -238,94 +247,11 @@ class MessageController extends BaseController{
 			$data['action']=null;
 	 		return View::make('message/index',$data);
 	 endif;
-			$data['messages']=Message::find($id);
+			$data['message']=Message::find($id);
 	 		$data['title']='メッセージ明細';
 			
 	 return View::make('message/view',$data);
  }
-/*
-|------------------------------------
-| コメントページ
-|------------------------------------
-*
-	public function getComment($action=null,$id=null){
-		//コメント作成
-		if($action=='creaet'){
-			$data['action']=$action;
-			$data['key']=$id;
-		return View::make('message/comment/create',$data);
-		//未読コメントの表示
-		}elseif($action=='unread'){
-		//未読メッセージ
-				$data['action']=$action;
-				$unread=Work::find(Auth::user()->id)->pluck('comment');
-				//return dd($unread);
-				$data['action']=$action;
-				$data['comments']=isset($unread) ? unserialize($unread) :null;
-			return View::make('message/comment/unread',$data);
-			//未読コメントのチェック
-		}elseif($action=='check'){
-			$data['action']=$action;
-			$data['key']=$id;
-			//未読コメントの削除
-			return View::make('message/view/'.$id,$data);
-		}
-	}
-	
-	public function postComment($action=null,$id=null){
-		//return var_dump($id);
-		if($action = 'create'){
-			$inputs=Input::only('comment');
-			//return var_dump($inputs);
-			$rules=array('comment'=>'required');
-			$val=Validator::make($inputs,$rules);
-			if($val->fails()){
-				return Redirect::back()
-					->withInput()
-					->withErrors($val);
-			}
-			//新しいコメントを配列として取得
-			$new=(array($inputs['comment'].' ( '.Auth::user()->name.' より )'));
-			$message=Message::find($id);
-			//古いコメントを配列として取得
-			$old=isset($message->comment) ? unserialize($message->comment) : array();
-			//配列の併合
-			$merge=isset($old) ? array_merge($old,$new) : $new;
-			//コメントをシリアライズで保存
-			$message->comment=serialize($merge);
-			$message->save();
-			
-			/***************************************
-			 *  worksテーブルの未読コメントを登録
-			 ***************************************
-			 //メッセージの受信者を取得
-			 if(isset($message->recipient_id)){
-				 $users=User::where('user_id',$message->recipient_id)->get();
-			 }else{
-				 $users=User::where('role_id','<=',$message->role_id)->get();
-			 }
-			 //return dd($users);
-			   foreach($users as $user):
-					$work=Work::where('user_id',$user->id)->first();
-				 	//新しいコメントのメッセージID
-					$new=(array($message->id));
-				   //古いコメントを配列として取得
-					$old=isset($work->comment) ? unserialize($work->comment) : array();
-					//return dd($old);
-					//配列の併合
-				  $merge=isset($old) ? array_merge($old,$new) : $new;
-					//return dd($merge);
-					//$work=Work::find($user_id);
-					//return dd($work->comment);
-					//コメントをシリアライズで保存
-					$work->comment=serialize($merge);
-					$work->save();
-				 endforeach;
-		}
-		//ログインユーザーの全メッセージを取得
-		$data['messages']=Message::own()->paginate();
-		return View::make('message/index',$data);
-	}*/
 	
 /*
 |------------------------------------
@@ -335,16 +261,16 @@ class MessageController extends BaseController{
 	public function postSearch(){
 		$input=Input::get('search');
 		$action=Input::get('action');
-		$messages=Message::where('subject','LIKE','%'.$input.'%')
-			->orWhere('body','LIKE','%'.$input.'%')
-			->orderBy('created_at','desc');
 		if($action == 'sent'):
-			$data['messages']=$messages->where('user_id',Auth::user()->id)
+			$data['messages']=$this->sent()
+				->where('subject','LIKE','%'.$input.'%')
 				->paginate();
 			$data['title']='送信メッセージ検索';
 			$data['action']='sent';
 		else:
-			$data['messages']=$messages->paginate();
+			$data['messages']=$this->own()
+				->where('subject','LIKE','%'.$input.'%')
+				->paginate();
 			$data['title']='受信メッセージ検索';
 			$data['action']=null;
 		endif;

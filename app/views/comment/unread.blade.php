@@ -19,7 +19,7 @@
   <tr>
     <td>
 <!--<div class="alert-box success tiny">
--->    {{ HTML::link('comment/unread/'.$comment->id.'/'.$key,$comment->body,array('class'=>'button small expand')) }}
+-->    {{ HTML::link('comment/unread/'.$comment->id.'/'.$key,$comment->body,array('class'=>'button small alert expand')) }}
 <!--</div>
 -->    </td>
     <td>{{ User::find($comment->user_id)->name }}</td>

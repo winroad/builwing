@@ -43,12 +43,11 @@ Route::filter('auth', function(){
 });
 
 Route::filter('admin', function(){
-	//ログインしていなければ、ログインページへ
-	if(Auth::guest()) return Redirect::guest('login');
-	//ログインしていてもAdminで無ければ、Userページへ
-	//if(Auth::user()->group_id<>1){
-		//return Redirect::intended('user');
-	//}
+	if(Auth::guest()):
+		return Redirect::guest('login');
+	elseif(!Auth::user()->is(array('Super Admin','Admin','Director'))):
+		return Redirect::intended('user');	
+	endif;
 });
 
 
